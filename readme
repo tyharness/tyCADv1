@@ -1,0 +1,18 @@
+http://www.tyharness.dx.am/tctutorial/index.htm
+
+This is a work in progress  rough and ready programming
+
+
+tyCAD - a simple set of c functions for use with computer aided design CAD.  I often find with various CAD applications
+that they are limted and I know 5 lines of code will probably solve the problem.  Therefore here's some functions you may
+find useful.  Please It's not a graphical editor/application but produces data in a DXF format so you can import into the CAD application of your choice.
+
+
+From CLI
+
+To compile:
+make
+
+To run
+./tyCADv1
+
