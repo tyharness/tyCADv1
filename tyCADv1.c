@@ -102,6 +102,8 @@ printhelp ()
       printf
 	("|10)Generate Airy1830 Example                 11)Airy1830.dxf                  |\n");
       printf
+	("|12)Mems Device Example                       13)Mems1e.dxf                    |\n");
+      printf
 	("|==============================================================================|\n");
       printf
 	("| Press Ctrl c to quit at any time                                             |\n");
@@ -135,6 +137,12 @@ printhelp ()
 	choice = 10;
       if (strcmp (strChoice, "11\n") == 0)
 	choice = 11;
+      if (strcmp (strChoice, "12\n") == 0)
+	choice = 12;
+      if (strcmp (strChoice, "13\n") == 0)
+	choice = 13;
+
+
 
 
       if (strcmp (strChoice, "blankdxf\n") == 0)
@@ -207,6 +215,27 @@ printhelp ()
       stdout = freopen ("output/Airy1830.dxf", "w", stdout);
       print_wgs_to_OS ();
     }
+
+
+  if (choice == 12)
+    {
+
+      stdout = freopen ("mapdata/mems1e.csv", "w", stdout);
+      mems1e ();
+    }
+
+  if (choice == 13)
+    {
+
+      stdout = freopen ("output/mems1e.dxf", "w", stdout);
+      memsDevice ();
+    }
+
+
+
+
+
+
 
   if (choice == 100)
     {
