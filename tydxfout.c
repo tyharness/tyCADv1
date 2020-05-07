@@ -283,7 +283,6 @@ LatLong.Lat,phi, LatLong.Long,lambda, n,e2,v,rho,neta2,M,I,II,III,IIIA,IV,V,VI,N
 void
 printblankDXF ()
 {
-
   printDXFheader ();
   printDXFfooter ();
 }
@@ -294,7 +293,6 @@ printblankDXF ()
 void
 printMapwithDXFheadAndFoot ()
 {
-
 //write out dxf data
   printDXFheader ();
   printMap ();
@@ -1197,6 +1195,8 @@ generateHTMLtablefromCSVtest ()
   printf ("</table>\n");
 
 
+  printf ("</table>\n");
+
 }
 
 
@@ -1289,50 +1289,153 @@ NLines ()
 }
 
 
+void
+mems1e ()
+{
+
+
+  int n = 80;
+
+  double x, y, L, t, g, sh;
+  L = 100.0;
+  t = 10.0;
+  g = 4.0;
+  sh = 100;
+  x = 0.0;
+  y = 0.0;
+
+
+  printf ("%f,%f\n", -sh, 0.0);
+
+
+  for (int i = 0; i < n; i++)
+    {
+
+
+      if (i % 2 == 0)
+	{
+	  x = 0.0;
+	  if (i == 0)
+	    printf ("%f,%f\n", x, y);
+	  x = L;
+	  printf ("%f,%f\n", x, y);
+	  y += t;
+	  printf ("%f,%f\n", x, y);
+	}
+      else
+	{
+	  x = 0;
+	  printf ("%f,%f\n", x, y);
+
+	  if (i != n - 1)
+	    {
+	      y += t + g;
+	      printf ("%f,%f\n", x, y);
+
+	    }
+	}
+
+
+    }
+
+
+  printf ("%f,%f\n", -sh, y);
+  printf ("%f,%f\n", -sh, y * 0.5 + t);
+  printf ("%f,%f\n", -700.0, y * 0.5 + t);
+
+  printf ("%f,%f\n", -700.0, y * 0.5 + 150);
+  printf ("%f,%f\n", -1000.0, y * 0.5 + 150);
+
+  printf ("%f,%f\n", -1000.0, y * 0.5 - 150);
+  printf ("%f,%f\n", -700.0, y * 0.5 - 150);
+
+  printf ("%f,%f\n", -700.0, y * 0.5 - t);
+  printf ("%f,%f\n", -sh, y * 0.5 - t);
+
+
+
+
+
+}
+
 
 void
 memsDevice ()
 {
 
 
-  // printDXFHeader ("mems", 2, 1);
 
-/* printPolyLineHeader ();
-
-
-  double datum[2] = 0.0;
-  double point[7][2];
-  double AH = 10.0;
-  double AB = 1000.0;
-  double BC = 300.0;
-  double CD = 1000.0;
-  double DE = 30.0;
-  double FG = BC - ED;
+  //write out dxf data
+  printDXFheader ();
 
 
-  point[0][0] = datum[0];
-  point[0][1] = datum[1];
-  point[1][0] = AB;
-  point[1][1] = AB;
-  point[2][0] = 10.0;
-  point[2][1] = 0.0;
-  point[3][0] = 10.0;
-  point[3][1] = 0.0;
-  point[4][0] = 10.0;
-  point[4][1] = 0.0;
-  point[5][0] = 10.0;
-  point[5][1] = 0.0;
-  point[6][0] = 10.0;
-  point[6][1] = 0.0;
-  point[7][0] = 10.0;
-  point[7][1] = 0.0;
+
+  printPolyLineHeader ("mems1e", 3, 1);
+
+
+//read in the polyline
+
+  char *filename;
+  filename = "mapdata/mems1e.csv";
+
+  FILE *file;
+  char c;
+
+  file = fopen (filename, "r");
+
+
+  char sNum[30];
+  int q = 0;
+
+  double dx = 0;
+  double dy = 0;
+
+
+  if (file)
+    {
+
+
+      while (c != EOF)
+	{
+	  c = getc (file);
+	  if (c == EOF)
+	    break;
+	  if (c != ',' && c != ' ')
+	    {
+	      sNum[q] = c;
+	      q++;
+	    }
+
+	  if (c == ',')
+	    {
+	      dx = atof (sNum);
+	      q = 0;
+	      sNum[q] = '\0';
+	    }
+
+	  if (c == '\n')
+	    {
+	      dy = atof (sNum);
+	      //printf("%f ---- %f\n",dx,dy);
+	      printPloyLineVertex ("mems1e", dx, dy, 0.0);
+	      q = 0;
+	      sNum[q] = '\0';
+	    }
+
+
+
+	}
+
+
+      fclose (file);
+    }
 
   printPolyLineFooter ();
 
 
-  printDXFFooter();
+  printDXFfooter ();
 
-*/
+
 
 }
 
