@@ -11,7 +11,7 @@ tyCADv1.o:  tyCADv1.c
 	$(CC) $(CFLAGS) $(LIBS) -c tyCADv1.c
 
 tydxfout.o:  tydxfout.c tydxfout.h
-	$(CC) $(CFLAGS) $(LIBS) -c tydxfout.c
+	$(CC) $(CFLAGS) $(LIBS) -c tydxfout.c tydxfout.h
 
 SIR.o:  SIR.c SIR.h
 	$(CC) $(CFLAGS) $(LIBS) -c SIR.c SIR.h
