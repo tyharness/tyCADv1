@@ -1,13 +1,21 @@
 http://www.tyharness.dx.am/tctutorial/index.htm
 
-This is a work in progress  rough and ready programming
+This is a work in progress - rough and ready programming.  
+
+I'm writing this software in the UK over this COVID-19 virus pandemic and feeling a bit useless.  The world's poor and vulnerable are going to suffer badly.  We've got to help poorer nations and how control and eradicate the virus.  
+
+Features:
+*Mapping
+*Graphing
+*html data tables
+*Micro Electro Mechanical Systems (MEMS) device design
 
 
-tyCAD - a simple set of c functions for use with computer aided design CAD.  I often find with various CAD applications
-that they are limted and I know 5 lines of code will probably solve the problem.  Therefore here's some functions you may
-find useful.  Please It's not a graphical editor/application but produces data in a DXF format so you can import into the CAD application of your choice.
+tyCADv1 - a simple set of c functions for use with computer aided design CAD.  I often find with various CAD applications
+that they are limted and I know 5 lines of code will probably solve the problem.  Therefore here are some functions you may
+find useful.  Please note it's not a graphical editor/application but produces data using the DXF format so you can import the generated data into the CAD application of your choice.
 
-I'm using a Raspberry PI 3 which has gnu c compilor included.
+I'm using a Raspberry PI 3 which has gnu c compiler included.  Plus there's a nice open source CAD application called LibreCAD.  I'm a TurboCAD man from my working days - or at least it's the only commercial software I could afford for home use.  DXF although old fashioned still does the job.
 
 From CLI
 
@@ -18,7 +26,7 @@ To run
 ./tyCADv1
 
 
-Choose from the menu what to export to the output directory
+Choose from the text menu what to export to the output directory
 
 
 To use LibreCAD
