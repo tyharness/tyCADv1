@@ -95,3 +95,8 @@ void printMapwithDXFheadAndFoot ();
 
 void readinLatLong (char *filename);
 void printMapLatLong (char *countryname);
+
+void memsDeviceDXF ();
+
+
+

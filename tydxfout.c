@@ -18,7 +18,7 @@ SOLID     Four points defining the corners of the solid: (10, 20, 30),
 #include <string.h>
 #include <math.h>
 #include "tydxfout.h"
-#include <time.h>
+#include "tyMems1.h"
 
 double degToRad = 0.017453292;
 
@@ -333,11 +333,11 @@ readinLatLong (char *filename)
   if (file)
     {
 
-
-      while (c != EOF)
+ 
+      while (c != EOF || (int)c == 255) 
 	{
 	  c = getc (file);
-	  if (c == EOF)
+	  if (c == EOF || (int)c == 255)
 	    break;
 	  if (c != ',' && c != ' ')
 	    {
@@ -362,7 +362,7 @@ readinLatLong (char *filename)
 	      LLo.Long = dx;
 	      en = latlong_to_EN (LLo);
 
-	      printPloyLineVertex ("tyMapData", en.E, en.N, 0.0);
+	      printPloyLineVertex ("tyinput", en.E, en.N, 0.0);
 	      q = 0;
 	      sNum[q] = '\0';
 	    }
@@ -424,40 +424,39 @@ printMap ()
 
   printPolyLineHeader ("UKcoast", 2, 1);
 
-/*test triangle closed
-printPloyLineVertex("tyPoly",0.0,0.0,0.0);
-printPloyLineVertex("tyPoly",200.0,0.0,0.0);
-printPloyLineVertex("tyPoly",200.0,200.0,0.0);
-*/
+
 
 //read in map coords
 
   char *filename;
-  filename = "mapdata/UKmapData.csv";
+  filename = "input/UKmapData.csv";
 
   FILE *file;
   char c;
 
   file = fopen (filename, "r");
-//double x;
-//double y;
+
 
   char sNum[30];
   int q = 0;
 
   double dx = 0;
   double dy = 0;
-//int flip = 0;
+
 
   if (file)
     {
 
 
-      while (c != EOF)
+      while (c != EOF || (int)c != 255)
 	{
+	  
 	  c = getc (file);
-	  if (c == EOF)
+	 // printf("%c %d\n",c,(int)c);
+	  
+	  if(c == EOF || (int)c == 255)
 	    break;
+	  
 	  if (c != ',' && c != ' ')
 	    {
 	      sNum[q] = c;
@@ -468,7 +467,8 @@ printPloyLineVertex("tyPoly",200.0,200.0,0.0);
 	    {
 	      dx = atof (sNum);
 	      q = 0;
-	      sNum[q] = '\0';
+	      //sNum[q] = '\0';
+	       memset (sNum, 0, sizeof sNum);
 	    }
 
 	  if (c == '\n')
@@ -477,32 +477,28 @@ printPloyLineVertex("tyPoly",200.0,200.0,0.0);
 	      //printf("%f ---- %f\n",dx,dy);
 	      printPloyLineVertex ("tyPoly", dx, dy, 0.0);
 	      q = 0;
-	      sNum[q] = '\0';
+	      //sNum[q] = '\0';
+	       memset (sNum, 0, sizeof sNum);
 	    }
 
 
 
 	}
 
-
+        
       fclose (file);
     }
 
+  // printf(" debug here1\n");
+
+
   printPolyLineFooter ();
-
-
 
 
 
   printPolyLineHeader ("EireNI", 3, 1);;
-  printMapLatLong ("mapdata/eire.csv");
+  printMapLatLong ("input/eire.csv");
   printPolyLineFooter ();
-
-
-
-//printDXFfooter();
-
-
 
 
   freeLinesList ();
@@ -852,7 +848,7 @@ generateNightingaleExample (int N)
   double ang = 0;
 
 
-  file = fopen ("mapdata/coviddataUK.csv", "r");
+  file = fopen ("input/coviddataUK.csv", "r");
 
 
   char sNum[30];
@@ -869,10 +865,10 @@ generateNightingaleExample (int N)
 
 
 
-      while (c != EOF)
+      while (c != EOF || (int)c != 255)
 	{
 	  c = getc (file);
-	  if (c == EOF)
+	  if (c == EOF || (int)c == 255)
 	    break;
 	  if (c == '\n')
 	    nData++;
@@ -897,11 +893,11 @@ generateNightingaleExample (int N)
 
       int i = 0;
 
-      while (c1 != EOF)
+      while (c1 != EOF || (int)c1 != 255)
 	{
 
 	  c1 = getc (file);
-	  if (c1 == EOF)
+	  if (c1 == EOF || (int)c1 == 255)
 	    break;
 	  if (c1 != ',' && c1 != ' ')
 	    {
@@ -1044,7 +1040,7 @@ date,deaths/  , deaths/ -7 , ?
 
 
 
-  file = fopen ("mapdata/coviddataUK.csv", "r");
+  file = fopen ("input/coviddataUK.csv", "r");
 
 
   char sNum[30];
@@ -1061,11 +1057,11 @@ date,deaths/  , deaths/ -7 , ?
 
       int i = 0;
 
-      while (c1 != EOF)
+      while (c1 != EOF || (int)c1 != 255)
 	{
 
 	  c1 = getc (file);
-	  if (c1 == EOF)
+	  if (c1 == EOF || (int)c1 == 255)
 	    break;
 	  if (c1 != ',' && c1 != ' ')
 	    {
@@ -1140,7 +1136,7 @@ generateHTMLtablefromCSVtest ()
     ("<tr><td>UK</td> <td> CFR(T=0)</td> <td> CFR(T=7)</td> <td>ONS registered deaths<br>(increase on 5 year avg.)</td> </tr>");
 
   char *filename;
-  filename = "mapdata/COVID19dataUK.csv";
+  filename = "input/COVID19dataUK.csv";
 
   FILE *file;
   char c;
@@ -1155,10 +1151,10 @@ generateHTMLtablefromCSVtest ()
 
   if (file)
     {
-      while (c != EOF)
+      while (c != EOF || (int)c != 255)
 	{
 	  c = getc (file);
-	  if (c == EOF)
+	  if (c == EOF || (int)c == 255)
 	    break;
 
 	  if (c != ',')
@@ -1289,78 +1285,11 @@ NLines ()
 }
 
 
-void
-mems1e ()
-{
 
-
-  int n = 80;
-
-  double x, y, L, t, g, sh;
-  L = 100.0;
-  t = 10.0;
-  g = 4.0;
-  sh = 100;
-  x = 0.0;
-  y = 0.0;
-
-
-  printf ("%f,%f\n", -sh, 0.0);
-
-
-  for (int i = 0; i < n; i++)
-    {
-
-
-      if (i % 2 == 0)
-	{
-	  x = 0.0;
-	  if (i == 0)
-	    printf ("%f,%f\n", x, y);
-	  x = L;
-	  printf ("%f,%f\n", x, y);
-	  y += t;
-	  printf ("%f,%f\n", x, y);
-	}
-      else
-	{
-	  x = 0;
-	  printf ("%f,%f\n", x, y);
-
-	  if (i != n - 1)
-	    {
-	      y += t + g;
-	      printf ("%f,%f\n", x, y);
-
-	    }
-	}
-
-
-    }
-
-
-  printf ("%f,%f\n", -sh, y);
-  printf ("%f,%f\n", -sh, y * 0.5 + t);
-  printf ("%f,%f\n", -700.0, y * 0.5 + t);
-
-  printf ("%f,%f\n", -700.0, y * 0.5 + 150);
-  printf ("%f,%f\n", -1000.0, y * 0.5 + 150);
-
-  printf ("%f,%f\n", -1000.0, y * 0.5 - 150);
-  printf ("%f,%f\n", -700.0, y * 0.5 - 150);
-
-  printf ("%f,%f\n", -700.0, y * 0.5 - t);
-  printf ("%f,%f\n", -sh, y * 0.5 - t);
-
-
-
-
-
-}
 
 
 void
-memsDevice ()
+memsDeviceDXF ()
 {
 
 
@@ -1376,7 +1305,7 @@ memsDevice ()
 //read in the polyline
 
   char *filename;
-  filename = "mapdata/mems1e.csv";
+  filename = "input/mems1e.csv";
 
   FILE *file;
   char c;
@@ -1387,18 +1316,18 @@ memsDevice ()
   char sNum[30];
   int q = 0;
 
-  double dx = 0;
-  double dy = 0;
-
+  double dx = 0.0;
+  double dy = 0.0;
+  //double area = 0.0;
 
   if (file)
     {
 
 
-      while (c != EOF)
+      while (c != EOF || (int)c != 255)
 	{
 	  c = getc (file);
-	  if (c == EOF)
+	  if (c == EOF || (int)c == 255)
 	    break;
 	  if (c != ',' && c != ' ')
 	    {
@@ -1432,6 +1361,28 @@ memsDevice ()
 
   printPolyLineFooter ();
 
+
+  /*
+  dx = -110.0; dy=10.0;
+
+
+  for (int i = 0;i <20;i++){  
+  printPolyLineHeader ("mems1e_holes", 2, 1);
+ 
+   
+  printPloyLineVertex ("mems1e_holes", dx, dy, 0.0);
+  printPloyLineVertex ("mems1e_holes", dx+40.0, dy, 0.0);
+  printPloyLineVertex ("mems1e_holes", dx+40.0, dy+100.0, 0.0);
+
+  printPloyLineVertex ("mems1e_holes", dx, dy, 0.0);
+  printPloyLineVertex ("mems1e_holes", dx+40.0, dy, 0.0);
+  printPloyLineVertex ("mems1e_holes", dx+40.0, dy+100.0, 0.0);
+
+
+  printPolyLineFooter ();
+  dy += 110.0;
+}
+*/
 
   printDXFfooter ();
 

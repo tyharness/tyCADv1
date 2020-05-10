@@ -1,7 +1,7 @@
 /*
 http://www.tyharness.dx.am/tctutorial/index.htm
 
-This is a work in progress  rough and ready programming
+This is a work in progress  rough and ready brutish programming
 
 
 tyCAD - a simple set of c functions for use with computer aided design CAD.  I often find with various CAD applications
@@ -13,6 +13,11 @@ From CLI
 
 To compile:
 make
+
+To tidy up the files and force all files to be compile use: 
+make clean
+and then make
+
 
 To run
 ./tyCADv1
@@ -26,6 +31,7 @@ To run
 #include <unistd.h>
 #include <math.h>
 #include "tydxfout.h"
+#include "tyMems1.h"
 #include "SIR.h"
 
 
@@ -102,7 +108,7 @@ printhelp ()
       printf
 	("|10)Generate Airy1830 Example                 11)Airy1830.dxf                  |\n");
       printf
-	("|12)Mems Device Example                       13)Mems1e.dxf                    |\n");
+	("|12)Mems Device Example: mems1e.dxf                                            |\n");
       printf
 	("|==============================================================================|\n");
       printf
@@ -139,8 +145,7 @@ printhelp ()
 	choice = 11;
       if (strcmp (strChoice, "12\n") == 0)
 	choice = 12;
-      if (strcmp (strChoice, "13\n") == 0)
-	choice = 13;
+      
 
 
 
@@ -186,14 +191,14 @@ printhelp ()
 
   if (choice == 6)
     {
-      stdout = freopen ("mapdata/COVID19dataUK.csv", "w", stdout);
+      stdout = freopen ("input/COVID19dataUK.csv", "w", stdout);
       convert_coviddataUK_to_COVID19dataUK (5, 20);
 
       stdout = freopen ("output/cfrTableHTML.txt", "w", stdout);
       generateHTMLtablefromCSVtest ();
 
       stdout = freopen ("output/NightingaleExample.dxf", "w", stdout);
-      generateNightingaleExample (30);
+      generateNightingaleExample (31);
 
     }
 
@@ -219,16 +224,14 @@ printhelp ()
 
   if (choice == 12)
     {
+      printf ("mems1e.dxf exported to output directory...\n");
 
-      stdout = freopen ("mapdata/mems1e.csv", "w", stdout);
+      //generate the polyline data first
+      stdout = freopen ("input/mems1e.csv", "w", stdout);
       mems1e ();
-    }
-
-  if (choice == 13)
-    {
-
+      //then generate the dxf
       stdout = freopen ("output/mems1e.dxf", "w", stdout);
-      memsDevice ();
+      memsDeviceDXF ();
     }
 
 
@@ -239,7 +242,7 @@ printhelp ()
 
   if (choice == 100)
     {
-      printMapLatLong ("mapdata/eire.csv");
+      printMapLatLong ("input/eire.csv");
     }
 
 
