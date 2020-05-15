@@ -6,7 +6,7 @@ This is a work in progress  rough and ready brutish programming
 
 tyCAD - a simple set of c functions for use with computer aided design CAD.  I often find with various CAD applications
 that they are limted and I know 5 lines of code will probably solve the problem.  Therefore here's some functions you may
-find useful.  Please It's not a graphical editor/application but produces data in a DXF format so you can import into the CAD application of your choice.
+find useful.  Please note it's not a graphical editor/application but produces data in a DXF format so you can import into the CAD application of your choice.
 
 
 From CLI
@@ -185,7 +185,7 @@ printhelp ()
     {
       printf ("NightingaleExample.dxf exported to output directory...\n");
       stdout = freopen ("output/NightingaleExample.dxf", "w", stdout);
-      generateNightingaleExample (30);
+      generateNightingaleExample (31);
     }
 
 
@@ -198,7 +198,7 @@ printhelp ()
       generateHTMLtablefromCSVtest ();
 
       stdout = freopen ("output/NightingaleExample.dxf", "w", stdout);
-      generateNightingaleExample (31);
+      generateNightingaleExample (30);
 
     }
 

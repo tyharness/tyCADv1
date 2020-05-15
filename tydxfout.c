@@ -279,11 +279,43 @@ LatLong.Lat,phi, LatLong.Long,lambda, n,e2,v,rho,neta2,M,I,II,III,IIIA,IV,V,VI,N
 }
 
 
+void printDXFtext(char *text, char *layername, int colour, double x0, double y0, double h, double rot, int justify){
+ printf ("TEXT\n");
+  printf ("8\n");
+  printf ("%s\n", layername);
+  printf ("62\n");
+  printf ("%d\n", colour);
+  printf ("7\n");
+  printf ("%s\n", "simplex");
+  printf ("1\n");
+  printf ("%s\n", text);
+  printf ("10\n");
+  printf ("%f\n", x0);
+  printf ("20\n");
+  printf ("%f\n", y0);
+  printf ("30\n");
+  printf ("0\n");
+  printf ("40\n");
+  printf ("%f\n", h);
+  printf ("50\n");
+  printf ("%f\n", rot);
+  printf ("72\n");
+  printf ("%d\n", justify);
+  printf ("0\n");
+
+}
+
 
 void
 printblankDXF ()
 {
   printDXFheader ();
+
+/*testing functions*/
+
+//void printDXFtext(char *text, char *layername, int colour, double x0, double y0, double h, double rot, int justify);
+printDXFtext("testing","textL",1,100.0,100.0,25.0,45.0,0);
+
   printDXFfooter ();
 }
 
@@ -512,14 +544,14 @@ printWedgey (char *layername, int colour, double x, double y, double r,
 	     double StartAng, double incAng)
 {
 
-  printPolyLineHeader ("Nightingale", colour, 1);
+  printPolyLineHeader (layername, colour, 1);
   double degtorad = 0.017453292;
   double B;
   B = tan (incAng * degtorad * 0.25);
-  printPloyLineVertex ("Nightingale", 0, 0, 0.0);
-  printPloyLineVertexBulge ("Nightingale", r * cos (StartAng * degtorad),
+  printPloyLineVertex (layername, 0, 0, 0.0);
+  printPloyLineVertexBulge (layername, r * cos (StartAng * degtorad),
 			    r * sin (StartAng * degtorad), 0.0, B);
-  printPloyLineVertex ("Nightingale",
+  printPloyLineVertex (layername,
 		       r * cos ((StartAng + incAng) * degtorad),
 		       r * sin ((StartAng + incAng) * degtorad), 0.0);
   printPolyLineFooter ();
@@ -843,19 +875,24 @@ generateNightingaleExample (int N)
 
   FILE *file;
   char c, c1;
-  double cdiv = 0;		//number of divisions in a whole circle 360 deg
+  double cdiv = 0.0;		//number of divisions in a whole circle 360 deg
   int nData = 0;
-  double ang = 0;
+  double ang = 0.0;
 
 
   file = fopen ("input/coviddataUK.csv", "r");
 
-
+  char strText[30];
+  double th = 0.5;
+  double dr=0.0;
+ 
   char sNum[30];
+   memset (sNum, 0, sizeof sNum);
+
   int q = 0;
 
-  int dx = 0;
-  int dy = 0;
+  int dx = 0.0;
+  int dy = 0.0;
 
   double dxold = 0.0;
   double dyold = 0.0;
@@ -887,8 +924,8 @@ generateNightingaleExample (int N)
 
 
 
-
-//printf("%d %f\n",nData,cdiv);
+printf("999\n");
+printf("------------------------------------------------------------------  %d - %f\n",nData,cdiv);
 
 
       int i = 0;
@@ -909,41 +946,46 @@ generateNightingaleExample (int N)
 	    {
 	      dx = atoi (sNum);
 	      q = 0;
-	      //sNum[0] = '\0';
 	      memset (sNum, 0, sizeof sNum);
 	    }
 
 	  if (c1 == '\n')
 	    {
 	      dy = atoi (sNum);
-	      //  printf("%d ---- %d---- %f\n",dx,dy,(double)dx/(double)dy );
+                printf("999\n");
+	        printf("----------------------------------%d ---- %d---- %f\n",dx,dy,(double)dx/(double)dy );
+               dr = ( (double) dx / (double)dy ) * 100.0;
+	       printWedgey ("NightingaleT=0", 1, 0, 0, dr, ang, cdiv);
 
-	      printWedgey ("Nightingale", 1, 0, 0,
-			   ((double) dx / (double) dy) * 100.0, ang, cdiv);
+               sprintf(strText, "%.1f%%",dr);       
+               printDXFtext( strText ,"NightingaleTextT=0",1, 10.0*cos(ang*degToRad), 10.0*sin(ang*degToRad),th,ang,0);
+               
+               sprintf(strText, "%d/5/20",i+1);       
+               printDXFtext( strText ,"NightingaleTextDate",3, 20.0*cos(ang*degToRad), 20.0*sin(ang*degToRad),th,ang,0);
 
 
 
 	      if (i != 0)
 		{
-		  printWedgey ("Nightingale1", 5, 0, 0,
-			       ((double) dx - dxold) / ((double) dy - dyold -
-							7.0) * 100.0, ang,
-			       cdiv);
+	       dr = (   ((double) dx - dxold)  /   ( (double) dy - dyold - 7.0)    ) * 100.0; 
+               printWedgey ("NightingaleT=7", 5, 0, 0,dr, ang, cdiv);
+
+                            
+               sprintf(strText, "%.1f%%",dr);       
+               printDXFtext( strText ,"NightingaleTextT=7",5, 17.0*cos(ang*degToRad), 17.0*sin(ang*degToRad),th,ang,0);
+
 		}
+
 	      dxold = (double) dx;
 	      dyold = (double) dy;
 	      i++;
 
-
-
 	      ang += cdiv;
 
-
-
-
 	      q = 0;
-	      //sNum[0] = '\0';
+             
 	      memset (sNum, 0, sizeof sNum);
+              memset (strText, 0, sizeof strText);
 	    }
 
 
@@ -958,24 +1000,7 @@ generateNightingaleExample (int N)
 
 
 
-/*
-  double ang = 0;
-  for (int i = 0; i < nData; i++)
-    {
-      printWedgey ("Nightingale", i + 1, 0, 0, (r[0][i] / r[1][i]) * 100, ang,
-		   360 / cdiv);
-      //printf("%f   %f   %f\n",r[0][i], r[1][i],  (r[0][i] / r[1][i])*100);
-      if (i > 0)
-	printWedgey ("Nightingale1", i + 1, 0, 0,
-		     (r[0][i] - r[0][i - 1]) / (r[0][i] - r[0][i - 1] -
-						7) * 100, ang, 360 / cdiv);
-      ang += 360 / cdiv;
-    }
 
-
-
-
-*/
 
 
   printDXFfooter ();
@@ -1000,12 +1025,18 @@ generateFibonacciExample ()
   double ang = 0;
   double dr0 = 0;
   double dr1 = 1e4;
+  double th = dr1*0.5;
   double dr10 = dr0 + dr1;
+  char strText[10];
 
   for (int i = 0; i < cdiv; i++)
     {
+      
+      printWedgey ("Fibbonacci", i, 0, 0, dr10, ang, 360 / cdiv);
+      
+      sprintf(strText, " %.0f", dr1/1e4);       
+      printDXFtext( strText ,"FibbonacciText",i, dr10*cos(ang*degToRad), dr10*sin(ang*degToRad),th,ang,0);
 
-      printWedgey ("Nightingale", i, 0, 0, dr10, ang, 360 / cdiv);
       ang += 360 / cdiv;
       dr10 = dr0 + dr1;
       dr0 = dr1;
