@@ -279,8 +279,11 @@ LatLong.Lat,phi, LatLong.Long,lambda, n,e2,v,rho,neta2,M,I,II,III,IIIA,IV,V,VI,N
 }
 
 
-void printDXFtext(char *text, char *layername, int colour, double x0, double y0, double h, double rot, int justify){
- printf ("TEXT\n");
+void
+printDXFtext (char *text, char *layername, int colour, double x0, double y0,
+	      double h, double rot, int justify)
+{
+  printf ("TEXT\n");
   printf ("8\n");
   printf ("%s\n", layername);
   printf ("62\n");
@@ -314,7 +317,7 @@ printblankDXF ()
 /*testing functions*/
 
 //void printDXFtext(char *text, char *layername, int colour, double x0, double y0, double h, double rot, int justify);
-printDXFtext("testing","textL",1,100.0,100.0,25.0,45.0,0);
+  printDXFtext ("testing", "textL", 1, 100.0, 100.0, 25.0, 45.0, 0);
 
   printDXFfooter ();
 }
@@ -365,11 +368,11 @@ readinLatLong (char *filename)
   if (file)
     {
 
- 
-      while (c != EOF || (int)c == 255) 
+
+      while (c != EOF || (int) c == 255)
 	{
 	  c = getc (file);
-	  if (c == EOF || (int)c == 255)
+	  if (c == EOF || (int) c == 255)
 	    break;
 	  if (c != ',' && c != ' ')
 	    {
@@ -480,15 +483,15 @@ printMap ()
     {
 
 
-      while (c != EOF || (int)c != 255)
+      while (c != EOF || (int) c != 255)
 	{
-	  
+
 	  c = getc (file);
-	 // printf("%c %d\n",c,(int)c);
-	  
-	  if(c == EOF || (int)c == 255)
+	  // printf("%c %d\n",c,(int)c);
+
+	  if (c == EOF || (int) c == 255)
 	    break;
-	  
+
 	  if (c != ',' && c != ' ')
 	    {
 	      sNum[q] = c;
@@ -500,7 +503,7 @@ printMap ()
 	      dx = atof (sNum);
 	      q = 0;
 	      //sNum[q] = '\0';
-	       memset (sNum, 0, sizeof sNum);
+	      memset (sNum, 0, sizeof sNum);
 	    }
 
 	  if (c == '\n')
@@ -510,14 +513,14 @@ printMap ()
 	      printPloyLineVertex ("tyPoly", dx, dy, 0.0);
 	      q = 0;
 	      //sNum[q] = '\0';
-	       memset (sNum, 0, sizeof sNum);
+	      memset (sNum, 0, sizeof sNum);
 	    }
 
 
 
 	}
 
-        
+
       fclose (file);
     }
 
@@ -884,10 +887,10 @@ generateNightingaleExample (int N)
 
   char strText[30];
   double th = 0.5;
-  double dr=0.0;
- 
+  double dr = 0.0;
+
   char sNum[30];
-   memset (sNum, 0, sizeof sNum);
+  memset (sNum, 0, sizeof sNum);
 
   int q = 0;
 
@@ -902,10 +905,10 @@ generateNightingaleExample (int N)
 
 
 
-      while (c != EOF || (int)c != 255)
+      while (c != EOF || (int) c != 255)
 	{
 	  c = getc (file);
-	  if (c == EOF || (int)c == 255)
+	  if (c == EOF || (int) c == 255)
 	    break;
 	  if (c == '\n')
 	    nData++;
@@ -924,17 +927,19 @@ generateNightingaleExample (int N)
 
 
 
-printf("999\n");
-printf("------------------------------------------------------------------  %d - %f\n",nData,cdiv);
+      printf ("999\n");
+      printf
+	("------------------------------------------------------------------  %d - %f\n",
+	 nData, cdiv);
 
 
       int i = 0;
 
-      while (c1 != EOF || (int)c1 != 255)
+      while (c1 != EOF || (int) c1 != 255)
 	{
 
 	  c1 = getc (file);
-	  if (c1 == EOF || (int)c1 == 255)
+	  if (c1 == EOF || (int) c1 == 255)
 	    break;
 	  if (c1 != ',' && c1 != ' ')
 	    {
@@ -952,27 +957,36 @@ printf("------------------------------------------------------------------  %d -
 	  if (c1 == '\n')
 	    {
 	      dy = atoi (sNum);
-                printf("999\n");
-	        printf("----------------------------------%d ---- %d---- %f\n",dx,dy,(double)dx/(double)dy );
-               dr = ( (double) dx / (double)dy ) * 100.0;
-	       printWedgey ("NightingaleT=0", 1, 0, 0, dr, ang, cdiv);
+	      printf ("999\n");
+	      printf ("----------------------------------%d ---- %d---- %f\n",
+		      dx, dy, (double) dx / (double) dy);
+	      dr = ((double) dx / (double) dy) * 100.0;
+	      printWedgey ("NightingaleT=0", 1, 0, 0, dr, ang, cdiv);
 
-               sprintf(strText, "%.1f%%",dr);       
-               printDXFtext( strText ,"NightingaleTextT=0",1, 10.0*cos(ang*degToRad), 10.0*sin(ang*degToRad),th,ang,0);
-               
-               sprintf(strText, "%d/5/20",i+1);       
-               printDXFtext( strText ,"NightingaleTextDate",3, 20.0*cos(ang*degToRad), 20.0*sin(ang*degToRad),th,ang,0);
+	      sprintf (strText, "%.1f%%", dr);
+	      printDXFtext (strText, "NightingaleTextT=0", 1,
+			    10.0 * cos (ang * degToRad),
+			    10.0 * sin (ang * degToRad), th, ang, 0);
+
+	      sprintf (strText, "%d/5/20", i + 1);
+	      printDXFtext (strText, "NightingaleTextDate", 3,
+			    20.0 * cos (ang * degToRad),
+			    20.0 * sin (ang * degToRad), th, ang, 0);
 
 
 
 	      if (i != 0)
 		{
-	       dr = (   ((double) dx - dxold)  /   ( (double) dy - dyold - 7.0)    ) * 100.0; 
-               printWedgey ("NightingaleT=7", 5, 0, 0,dr, ang, cdiv);
+		  dr =
+		    (((double) dx - dxold) / ((double) dy - dyold -
+					      7.0)) * 100.0;
+		  printWedgey ("NightingaleT=7", 5, 0, 0, dr, ang, cdiv);
 
-                            
-               sprintf(strText, "%.1f%%",dr);       
-               printDXFtext( strText ,"NightingaleTextT=7",5, 17.0*cos(ang*degToRad), 17.0*sin(ang*degToRad),th,ang,0);
+
+		  sprintf (strText, "%.1f%%", dr);
+		  printDXFtext (strText, "NightingaleTextT=7", 5,
+				17.0 * cos (ang * degToRad),
+				17.0 * sin (ang * degToRad), th, ang, 0);
 
 		}
 
@@ -983,9 +997,9 @@ printf("------------------------------------------------------------------  %d -
 	      ang += cdiv;
 
 	      q = 0;
-             
+
 	      memset (sNum, 0, sizeof sNum);
-              memset (strText, 0, sizeof strText);
+	      memset (strText, 0, sizeof strText);
 	    }
 
 
@@ -1025,17 +1039,18 @@ generateFibonacciExample ()
   double ang = 0;
   double dr0 = 0;
   double dr1 = 1e4;
-  double th = dr1*0.5;
+  double th = dr1 * 0.5;
   double dr10 = dr0 + dr1;
   char strText[10];
 
   for (int i = 0; i < cdiv; i++)
     {
-      
+
       printWedgey ("Fibbonacci", i, 0, 0, dr10, ang, 360 / cdiv);
-      
-      sprintf(strText, " %.0f", dr1/1e4);       
-      printDXFtext( strText ,"FibbonacciText",i, dr10*cos(ang*degToRad), dr10*sin(ang*degToRad),th,ang,0);
+
+      sprintf (strText, " %.0f", dr1 / 1e4);
+      printDXFtext (strText, "FibbonacciText", i, dr10 * cos (ang * degToRad),
+		    dr10 * sin (ang * degToRad), th, ang, 0);
 
       ang += 360 / cdiv;
       dr10 = dr0 + dr1;
@@ -1088,11 +1103,11 @@ date,deaths/  , deaths/ -7 , ?
 
       int i = 0;
 
-      while (c1 != EOF || (int)c1 != 255)
+      while (c1 != EOF || (int) c1 != 255)
 	{
 
 	  c1 = getc (file);
-	  if (c1 == EOF || (int)c1 == 255)
+	  if (c1 == EOF || (int) c1 == 255)
 	    break;
 	  if (c1 != ',' && c1 != ' ')
 	    {
@@ -1182,10 +1197,10 @@ generateHTMLtablefromCSVtest ()
 
   if (file)
     {
-      while (c != EOF || (int)c != 255)
+      while (c != EOF || (int) c != 255)
 	{
 	  c = getc (file);
-	  if (c == EOF || (int)c == 255)
+	  if (c == EOF || (int) c == 255)
 	    break;
 
 	  if (c != ',')
@@ -1355,10 +1370,10 @@ memsDeviceDXF ()
     {
 
 
-      while (c != EOF || (int)c != 255)
+      while (c != EOF || (int) c != 255)
 	{
 	  c = getc (file);
-	  if (c == EOF || (int)c == 255)
+	  if (c == EOF || (int) c == 255)
 	    break;
 	  if (c != ',' && c != ' ')
 	    {
@@ -1394,26 +1409,26 @@ memsDeviceDXF ()
 
 
   /*
-  dx = -110.0; dy=10.0;
+     dx = -110.0; dy=10.0;
 
 
-  for (int i = 0;i <20;i++){  
-  printPolyLineHeader ("mems1e_holes", 2, 1);
- 
-   
-  printPloyLineVertex ("mems1e_holes", dx, dy, 0.0);
-  printPloyLineVertex ("mems1e_holes", dx+40.0, dy, 0.0);
-  printPloyLineVertex ("mems1e_holes", dx+40.0, dy+100.0, 0.0);
-
-  printPloyLineVertex ("mems1e_holes", dx, dy, 0.0);
-  printPloyLineVertex ("mems1e_holes", dx+40.0, dy, 0.0);
-  printPloyLineVertex ("mems1e_holes", dx+40.0, dy+100.0, 0.0);
+     for (int i = 0;i <20;i++){  
+     printPolyLineHeader ("mems1e_holes", 2, 1);
 
 
-  printPolyLineFooter ();
-  dy += 110.0;
-}
-*/
+     printPloyLineVertex ("mems1e_holes", dx, dy, 0.0);
+     printPloyLineVertex ("mems1e_holes", dx+40.0, dy, 0.0);
+     printPloyLineVertex ("mems1e_holes", dx+40.0, dy+100.0, 0.0);
+
+     printPloyLineVertex ("mems1e_holes", dx, dy, 0.0);
+     printPloyLineVertex ("mems1e_holes", dx+40.0, dy, 0.0);
+     printPloyLineVertex ("mems1e_holes", dx+40.0, dy+100.0, 0.0);
+
+
+     printPolyLineFooter ();
+     dy += 110.0;
+     }
+   */
 
   printDXFfooter ();
 

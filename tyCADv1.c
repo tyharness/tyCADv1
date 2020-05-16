@@ -145,7 +145,7 @@ printhelp ()
 	choice = 11;
       if (strcmp (strChoice, "12\n") == 0)
 	choice = 12;
-      
+
 
 
 
@@ -198,7 +198,7 @@ printhelp ()
       generateHTMLtablefromCSVtest ();
 
       stdout = freopen ("output/NightingaleExample.dxf", "w", stdout);
-      generateNightingaleExample (30);
+      generateNightingaleExample (31);
 
     }
 
