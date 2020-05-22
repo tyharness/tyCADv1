@@ -23,6 +23,268 @@ SOLID     Four points defining the corners of the solid: (10, 20, 30),
 double degToRad = 0.017453292;
 
 
+void
+printblankDXF ()
+{
+  printDXFheader ();
+
+/*testing functions*/
+
+//void printDXFtext(char *text, char *layername, int colour, double x0, double y0, double h, double rot, int justify);
+//printDXFtext ("testing", "textL", 1, 100.0, 100.0, 25.0, 45.0, 0);
+//print_xyAxes("axes",7,-200.0,300.0,-100.0,500.0,10,12);
+
+  // print_lat_long_cylindrical_projection();
+  print_lat_long_projection ();
+
+  printDXFfooter ();
+}
+
+
+
+void
+print_xyAxes (char *layername, int colour, double xmin, double xmax,
+	      double ymin, double ymax, int divX, int divY)
+{
+
+
+  printLine (layername, xmin, 0.0, xmax, 0.0, colour);
+  printLine (layername, 0.0, ymin, 0.0, ymax, colour);
+
+  double dx = (xmax - xmin) / (double) divX;
+  double dy = (ymax - ymin) / (double) divY;
+
+  double x = xmin;
+
+  for (int i = 0; i <= divX; i++)
+    {
+      printLine (layername, x, 0.0, x, -10.0, colour);
+      x += dx;
+    }
+
+  double y = ymin;
+
+  for (int i = 0; i <= divY; i++)
+    {
+      printLine (layername, 0.0, y, -10.0, y, colour);
+      y += dy;
+    }
+
+
+
+
+}
+
+
+void
+print_lat_long_projection ()
+{
+
+
+  int cdiv = 36;		//keep it even
+
+  double dx = 360.0 / (double) cdiv;
+  double dy = 360.0 / (double) cdiv;
+
+  double x0 = -180.0;
+  double y0 = -90.0;
+  double x1 = x0 + dx;
+  double y1 = -90.0;
+
+  for (int i = 0; i <= (int) cdiv * 0.5; i++)
+    {
+      for (int j = 0; j < cdiv; j++)
+	{
+	  printLine ("Lattitudes", x0, y0, x1, y1, 8);
+	  x0 = x1;
+	  x1 += dx;
+	}
+      x0 = -180;
+      x1 = x0 + dx;
+      y0 += dy;
+      y1 = y0;
+
+    }
+
+
+  x0 = -180.0;
+  y0 = -90.0;
+  x1 = x0;
+  y1 = y0 + dy;
+
+  for (int i = 0; i <= cdiv; i++)
+    {
+      for (int j = 0; j < (int) cdiv * 0.5; j++)
+	{
+	  printLine ("Longitudes", x0, y0, x1, y1, 8);
+	  y0 = y1;
+	  y1 += dy;
+	}
+      y0 = -90;
+      y1 = y0 + dy;
+      x0 += dx;
+      x1 = x0;
+
+    }
+
+
+  printPolyLineHeader ("Africa", 4, 1);;
+  readinLatLong1 ("input/Africa.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("England", 1, 1);;
+  readinLatLong1 ("input/England.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("Scotland", 5, 1);;
+  readinLatLong1 ("input/Scotland.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("Wales", 7, 1);;
+  readinLatLong1 ("input/Wales.csv");
+  printPolyLineFooter ();
+
+
+
+  printPolyLineHeader ("Eire", 76, 1);;
+  readinLatLong1 ("input/EireSI.csv");
+  printPolyLineFooter ();
+
+
+
+  printPolyLineHeader ("NI", 3, 1);;
+  readinLatLong1 ("input/NI.csv");
+  printPolyLineFooter ();
+
+
+  printPolyLineHeader ("IsleOfWight", 4, 1);
+  readinLatLong1 ("input/IsleOfWight.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("IsleOfMan", 4, 1);
+  readinLatLong1 ("input/IsleOfMan.csv");
+  printPolyLineFooter ();
+
+
+  printPolyLineHeader ("OrkneyIsles", 4, 1);
+  readinLatLong1 ("input/Orkney.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("ShetlandIsles", 4, 1);
+  readinLatLong1 ("input/Shetland.csv");
+  printPolyLineFooter ();
+
+
+  printPolyLineHeader ("USA", 4, 1);;
+  readinLatLong1 ("input/usa.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("SouthAmerica", 4, 1);;
+  readinLatLong1 ("input/SouthAmerica.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("Mexico", 4, 1);;
+  readinLatLong1 ("input/Mexico.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("Australia", 4, 1);;
+  readinLatLong1 ("input/Australia.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("Greenland", 4, 1);;
+  readinLatLong1 ("input/Greenland.csv");
+  printPolyLineFooter ();
+
+
+  printPolyLineHeader ("Portugal", 4, 1);;
+  readinLatLong1 ("input/Portugal.csv");
+  printPolyLineFooter ();
+
+
+  printPolyLineHeader ("Spain", 4, 1);;
+  readinLatLong1 ("input/Spain.csv");
+  printPolyLineFooter ();
+  printPolyLineHeader ("France", 4, 1);;
+  readinLatLong1 ("input/France.csv");
+  printPolyLineFooter ();
+
+
+  printPolyLineHeader ("Greenland", 4, 1);;
+  readinLatLong1 ("input/Greenland.csv");
+  printPolyLineFooter ();
+
+
+
+
+  // printPolyLineHeader ("Antartica", 4, 1);
+  // readinLatLong1 ("input/Antartica.csv");
+  //printPolyLineFooter ();
+
+  printPolyLineHeader ("Iceland", 4, 1);
+  readinLatLong1 ("input/Iceland.csv");
+  printPolyLineFooter ();
+
+
+/*
+printPolyLineHeader ("riw", 4, 1);
+   readinLatLong1 ("input/riw.csv");
+  printPolyLineFooter ();
+*/
+
+
+}
+
+
+
+void
+print_lat_long_cylindrical_projection ()
+{
+
+
+
+  struct LATLONG latlong;
+  struct XYZ xyz0;
+  struct XYZ xyz1;
+
+
+
+
+
+  int cdiv = 36;		//keep it even
+
+  double dlong = 360.0 / (double) cdiv;
+  double dlat = 360.0 / (double) cdiv;
+
+
+
+  // printDXFheader ();  
+
+  latlong.Long = -180.0;
+  latlong.Lat = 0.0;
+  xyz0 = latlong_to_XYZ (latlong);
+
+  for (int j = 0; j < cdiv; j++)
+    {
+
+      for (int i = 0; i < cdiv; i++)
+	{
+	  latlong.Long += dlong;
+	  xyz1 = latlong_to_XYZ (latlong);
+
+	  printLine ("LattitudesA", xyz0.x, xyz0.y, xyz1.x, xyz1.y, 1);
+	  xyz0 = xyz1;
+	}
+
+      latlong.Lat += dlat;
+      latlong.Long = -180.0;
+      xyz0 = latlong_to_XYZ (latlong);
+    }
+
+  // printDXFfooter ();
+
+
+}
+
 
 
 
@@ -36,66 +298,139 @@ print_wgs_to_OS ()
   struct EN en1;
 
   latlong.Lat = -90.0;
-  latlong.Long = -90.0;
+  latlong.Long = -180.0;
 
-  int cdiv = 18;		//keep it even
+  int cdiv = 36;		//keep it even
+
+  double dlong = 360.0 / (double) cdiv;
+  double dlat = 360.0 / (double) cdiv;
+
+
 
   printDXFheader ();
 
-  for (int j = 0; j < cdiv + 1; j++)
+
+
+/*
+
+  for (int j = 0; j <= cdiv; j++)
     {
 
-      for (int i = 0; i < cdiv + 1; i++)
+      for (int i = 0; i <= 2*cdiv; i++)
 	{
 	  en = latlong_to_EN (latlong);
 	  printCirle ("WGSpoints", en.E, en.N, 1e4, 1);
-	  latlong.Lat += (double) (180 / cdiv);
+	  latlong.Lat += (double) (360/ cdiv);
 
 	}
       latlong.Lat = -90.0;
-      latlong.Long += (double) (180 / cdiv);
+      latlong.Long += (double) (360 / cdiv);
     }
 
-  printMap ();
+
+*/
+
+/*
+ * print out the individual country maps
+ */
+
+
+  printMap ();			//uk map
+
+
+  printPolyLineHeader ("EireNI", 4, 1);;
+  printMapLatLong ("input/eire.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("Africa", 4, 1);;
+  printMapLatLong ("input/Africa.csv");
+  printPolyLineFooter ();
+
+
+  printPolyLineHeader ("USA", 4, 1);;
+  printMapLatLong ("input/usa.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("SouthAmerica", 4, 1);;
+  printMapLatLong ("input/SouthAmerica.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("Mexico", 4, 1);;
+  printMapLatLong ("input/Mexico.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("Australia", 1, 1);;
+  printMapLatLong ("input/Austraila.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("Greenland", 4, 1);;
+  printMapLatLong ("input/Greenland.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("Antartica", 4, 1);
+  printMapLatLong ("input/Antartica.csv");
+  printPolyLineFooter ();
 
 
 
 
+
+/*
+printPolyLineHeader ("Thailand", 4, 1);;
+  printMapLatLong ("input/Thailand.csv");
+  printPolyLineFooter ();
+
+
+ printPolyLineHeader ("Spain", 8, 1);;
+  printMapLatLong ("input/Spain.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("Portugal", 8, 1);;
+  printMapLatLong ("input/Portugal.csv");
+  printPolyLineFooter ();
+*/
 
   latlong.Lat = 0.0;
-  latlong.Long = 90.0;
+  latlong.Long = 180.0;
   en = latlong_to_EN (latlong);
 
   latlong.Lat = 0.0;
-  latlong.Long = -90.0;
+  latlong.Long = -180.0;
   en1 = latlong_to_EN (latlong);
-  printLine ("Equator", en.E, en.N, en1.E, en1.N, 7);
+  printLine ("Equator", en.E, en.N, en1.E, en1.N, 1);
 
 
 
-//print circles of lattitude
+/*
+ * 
+ * print circles of lattitude
+  */
+
+
   latlong.Lat = -90.0;
+  latlong.Long = -180.0;
+  en = latlong_to_EN (latlong);
 
-  for (int j = 0; j < cdiv + 1; j++)
+
+  for (int i = 0; i < (int) cdiv * 0.5; i++)
     {
 
-      latlong.Long = -90.0;
-      en = latlong_to_EN (latlong);
-
-      for (int i = 0; i < cdiv; i++)
+      for (int j = 0; j < cdiv; j++)
 	{
-	  latlong.Long += (double) (180 / cdiv);
+	  latlong.Long += dlong;
 	  en1 = latlong_to_EN (latlong);
-	  if (j == (int) cdiv / 2)
+
+	  if (i == (int) cdiv * 0.25)
 	    printLine ("Equator", en.E, en.N, en1.E, en1.N, 7);
 	  else
 	    printLine ("Lattitudes", en.E, en.N, en1.E, en1.N, 8);
 
 	  en = latlong_to_EN (latlong);
 
-
 	}
-      latlong.Lat += (double) (180 / cdiv);
+      latlong.Lat += dlat;
+      latlong.Long = -180.0;
+      en = latlong_to_EN (latlong);
     }
 
 
@@ -106,36 +441,33 @@ print_wgs_to_OS ()
 
 
 
+//print merdians-----------------------------------------------------------------------
+  latlong.Long = -180.0;
+  latlong.Lat = -90.0;
 
 
-
-//print merdians
-  latlong.Long = -90.0;
-
-  for (int j = 0; j < cdiv + 1; j++)
+  for (int i = 0; i <= cdiv; i++)
     {
-
       latlong.Lat = -90.0;
       en = latlong_to_EN (latlong);
 
-      for (int i = 0; i < cdiv; i++)
+      for (int j = 0; j < (int) cdiv * 0.5; j++)
 	{
-	  latlong.Lat += (double) (180 / cdiv);
+	  latlong.Lat += dlat;
 	  en1 = latlong_to_EN (latlong);
 
-	  if (j == (int) cdiv / 2)
+	  if (i == (int) cdiv / 2)
 	    printLine ("GreenwhichMerdian", en.E, en.N, en1.E, en1.N, 7);
 	  else
 	    printLine ("Merdians", en.E, en.N, en1.E, en1.N, 8);
 
 	  en = latlong_to_EN (latlong);
-
-
 	}
-      latlong.Long += (double) (180 / cdiv);
+      latlong.Lat = -90.0;
+      latlong.Long += dlong;
     }
 
-
+//---------------------------------------------------------------------------
 
 
 
@@ -147,7 +479,7 @@ print_wgs_to_OS ()
 /*
 The false origin is 400 km west and 100 km north of the ‘true
 origin’ on the central meridian at 49°N 2°W.
-*/
+
   latlong.Lat = 49.766809;
   latlong.Long = -7.5571598;
   en = latlong_to_EN (latlong);
@@ -158,11 +490,28 @@ origin’ on the central meridian at 49°N 2°W.
   en = latlong_to_EN (latlong);
   printCirle ("OS_TO", en.E, en.N, 1e4, 3);
 
-
+*/
 
 
   printDXFfooter ();
 
+}
+
+
+struct XYZ
+latlong_to_XYZ (struct LATLONG LatLong)
+{
+
+
+  double r = 6377563.396 / 2.0;
+  struct XYZ xyz;
+  double piOver2 = 1.570796;
+
+  xyz.x = r * sin (piOver2 - LatLong.Long) * cos (LatLong.Lat);
+  xyz.y = r * sin (piOver2 - LatLong.Long) * sin (LatLong.Lat);
+  xyz.z = r * cos (piOver2 - LatLong.Long);
+
+  return xyz;
 }
 
 
@@ -264,7 +613,7 @@ latlong_to_EN (struct LATLONG LatLong)
     V * lambdaLessLambda03 + VI * lambdaLessLambda05;
 
 /*
-printf(" Lat=%f (%f)\n Lon=%f (%f)\n n=%f \n e2=%f\n v=%f\n rho=%f\n neta2=%f\n M=%f\n I=%f\n II=%f\n III=%f\n IIIA=%f\n IV=%f\n V=%f\n VI=%f\n N=%f\n E=%f\n", 
+printf(" Lat=%f (%f)\n Lon=%f (%f)\n n=%f \n e2=%f\n v=%f\n rho=%f\n neta2=%f\n M=%f\n I=%f\n II=%f\n III=%f\n IIIA=%f\n IV=%f\n V=%f\n VI=%f\n N=%f\n E=%f\n",
 LatLong.Lat,phi, LatLong.Long,lambda, n,e2,v,rho,neta2,M,I,II,III,IIIA,IV,V,VI,N,E);
 */
 
@@ -309,18 +658,7 @@ printDXFtext (char *text, char *layername, int colour, double x0, double y0,
 }
 
 
-void
-printblankDXF ()
-{
-  printDXFheader ();
 
-/*testing functions*/
-
-//void printDXFtext(char *text, char *layername, int colour, double x0, double y0, double h, double rot, int justify);
-  printDXFtext ("testing", "textL", 1, 100.0, 100.0, 25.0, 45.0, 0);
-
-  printDXFfooter ();
-}
 
 
 
@@ -331,6 +669,10 @@ printMapwithDXFheadAndFoot ()
 //write out dxf data
   printDXFheader ();
   printMap ();
+
+
+
+
   printDXFfooter ();
 }
 
@@ -341,7 +683,80 @@ printMapLatLong (char *countryname)
 
   readinLatLong (countryname);
 
+
 }
+
+
+
+void
+readinLatLong1 (char *filename)
+{
+
+//printf("%s\n",filename);
+
+
+
+  FILE *file;
+  char c;
+
+  file = fopen (filename, "r");
+
+  char sNum[30];
+  int q = 0;
+
+  double dx = 0;
+  double dy = 0;
+
+  if (file)
+    {
+
+
+      while (c != EOF || (int) c == 255)
+	{
+	  c = getc (file);
+	  if (c == EOF || (int) c == 255)
+	    break;
+	  if (c != ',' && c != ' ')
+	    {
+	      sNum[q] = c;
+	      q++;
+	    }
+
+	  if (c == ',')
+	    {
+	      dy = atof (sNum);
+	      q = 0;
+	      sNum[q] = '\0';
+	    }
+
+	  if (c == '\n')
+	    {
+	      dx = atof (sNum);
+	      //printf("%f ---- %f\n",dx,dy);
+
+	      // struct LATLONG LLo;
+	      //LLo.Lat = dy;
+	      //LLo.Long = dx;
+	      // en = latlong_to_EN (LLo);
+
+	      printPloyLineVertex ("LatLong", dx, dy, 0.0);
+	      q = 0;
+	      sNum[q] = '\0';
+	    }
+
+
+
+	}
+
+
+      fclose (file);
+    }
+
+
+
+
+}
+
 
 void
 readinLatLong (char *filename)
@@ -536,6 +951,10 @@ printMap ()
   printPolyLineFooter ();
 
 
+
+
+
+
   freeLinesList ();
 
 }
@@ -550,6 +969,8 @@ printWedgey (char *layername, int colour, double x, double y, double r,
   printPolyLineHeader (layername, colour, 1);
   double degtorad = 0.017453292;
   double B;
+  if (r < 0)
+    r = -r;
   B = tan (incAng * degtorad * 0.25);
   printPloyLineVertex (layername, 0, 0, 0.0);
   printPloyLineVertexBulge (layername, r * cos (StartAng * degtorad),
@@ -1412,7 +1833,7 @@ memsDeviceDXF ()
      dx = -110.0; dy=10.0;
 
 
-     for (int i = 0;i <20;i++){  
+     for (int i = 0;i <20;i++){
      printPolyLineHeader ("mems1e_holes", 2, 1);
 
 
@@ -1452,14 +1873,14 @@ char c;
 
 file = fopen(filename, "r");
 
-if (file) 
-    { 
-     while (c != EOF) 
-        { 
+if (file)
+    {
+     while (c != EOF)
+        {
         c = getc(file);
          if (c==EOF) break;
-        putchar(c); 
-        } 
+        putchar(c);
+        }
 //printf("\n");
 fclose(file);
 }

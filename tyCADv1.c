@@ -150,7 +150,7 @@ printhelp ()
 
 
 
-      if (strcmp (strChoice, "blankdxf\n") == 0)
+      if (strcmp (strChoice, "b\n") == 0)
 	choice = 200;
 
 
