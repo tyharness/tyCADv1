@@ -80,6 +80,7 @@ void
 print_lat_long_projection ()
 {
 
+/* DUmb Projection but easy to program and check*/
 
   int cdiv = 36;		//keep it even
 
@@ -204,14 +205,12 @@ print_lat_long_projection ()
   printPolyLineHeader ("Spain", 4, 1);;
   readinLatLong1 ("input/Spain.csv");
   printPolyLineFooter ();
+
   printPolyLineHeader ("France", 4, 1);;
   readinLatLong1 ("input/France.csv");
   printPolyLineFooter ();
 
 
-  printPolyLineHeader ("Greenland", 4, 1);;
-  readinLatLong1 ("input/Greenland.csv");
-  printPolyLineFooter ();
 
 
 
@@ -220,16 +219,28 @@ print_lat_long_projection ()
   // readinLatLong1 ("input/Antartica.csv");
   //printPolyLineFooter ();
 
+
+  // printPolyLineHeader ("Artic", 4, 1);
+  // readinLatLong1 ("input/Artic.csv");
+  //printPolyLineFooter ();
+
+  // printPolyLineHeader ("Japan", 4, 1);
+  // readinLatLong1 ("input/Japan.csv");
+  //printPolyLineFooter ();
+
+
   printPolyLineHeader ("Iceland", 4, 1);
   readinLatLong1 ("input/Iceland.csv");
   printPolyLineFooter ();
 
-
-/*
-printPolyLineHeader ("riw", 4, 1);
-   readinLatLong1 ("input/riw.csv");
+  printPolyLineHeader ("SriLanka", 4, 1);
+  readinLatLong1 ("input/SriLanka.csv");
   printPolyLineFooter ();
-*/
+
+  printPolyLineHeader ("riw", 4, 1);
+  readinLatLong1 ("input/riw.csv");
+  printPolyLineFooter ();
+
 
 
 }
@@ -257,9 +268,11 @@ print_lat_long_cylindrical_projection ()
 
 
 
-  // printDXFheader ();  
 
-  latlong.Long = -180.0;
+
+  double startLong = -180.0;
+
+  latlong.Long = startLong;
   latlong.Lat = 0.0;
   xyz0 = latlong_to_XYZ (latlong);
 
@@ -276,11 +289,10 @@ print_lat_long_cylindrical_projection ()
 	}
 
       latlong.Lat += dlat;
-      latlong.Long = -180.0;
+      latlong.Long = startLong;
       xyz0 = latlong_to_XYZ (latlong);
     }
 
-  // printDXFfooter ();
 
 
 }
@@ -296,14 +308,25 @@ print_wgs_to_OS ()
   struct LATLONG latlong;
   struct EN en;
   struct EN en1;
+  char strText[30];
 
-  latlong.Lat = -90.0;
-  latlong.Long = -180.0;
+  // double startLong = -180.0;
+  double startLong = -14.0;
+  double endLong = 10.0;
 
-  int cdiv = 36;		//keep it even
+  //double startLat = -90.0;
+  double startLat = 49.0;
+  double endLat = 73.0;
 
-  double dlong = 360.0 / (double) cdiv;
-  double dlat = 360.0 / (double) cdiv;
+  latlong.Lat = startLat;
+  latlong.Long = startLong;
+
+
+  //int cdiv = 36;              //keep it even
+  int cdiv = 96;
+
+  double dlong = (endLong - startLong) / (double) cdiv;
+  double dlat = (endLat - startLat) / (double) cdiv;
 
 
 
@@ -330,17 +353,24 @@ print_wgs_to_OS ()
 
 */
 
+
+
+
 /*
  * print out the individual country maps
  */
 
 
-  printMap ();			//uk map
+  printMap ();			//uk map in OSGB coordinates
 
-
+/*
   printPolyLineHeader ("EireNI", 4, 1);;
   printMapLatLong ("input/eire.csv");
   printPolyLineFooter ();
+
+
+
+
 
   printPolyLineHeader ("Africa", 4, 1);;
   printMapLatLong ("input/Africa.csv");
@@ -371,35 +401,28 @@ print_wgs_to_OS ()
   printMapLatLong ("input/Antartica.csv");
   printPolyLineFooter ();
 
-
-
-
-
-/*
-printPolyLineHeader ("Thailand", 4, 1);;
+  printPolyLineHeader ("Thailand", 4, 1);;
   printMapLatLong ("input/Thailand.csv");
   printPolyLineFooter ();
 
-
- printPolyLineHeader ("Spain", 8, 1);;
+  printPolyLineHeader ("Spain", 8, 1);;
   printMapLatLong ("input/Spain.csv");
   printPolyLineFooter ();
 
   printPolyLineHeader ("Portugal", 8, 1);;
   printMapLatLong ("input/Portugal.csv");
   printPolyLineFooter ();
-*/
 
-  latlong.Lat = 0.0;
-  latlong.Long = 180.0;
+  latlong.Lat = startLat;
+  latlong.Long = endLong;
   en = latlong_to_EN (latlong);
 
-  latlong.Lat = 0.0;
-  latlong.Long = -180.0;
+  latlong.Lat = startLat;
+  latlong.Long = startLong;
   en1 = latlong_to_EN (latlong);
   printLine ("Equator", en.E, en.N, en1.E, en1.N, 1);
 
-
+*/
 
 /*
  * 
@@ -407,12 +430,12 @@ printPolyLineHeader ("Thailand", 4, 1);;
   */
 
 
-  latlong.Lat = -90.0;
-  latlong.Long = -180.0;
+  latlong.Lat = startLat;
+  latlong.Long = startLong;
   en = latlong_to_EN (latlong);
 
 
-  for (int i = 0; i < (int) cdiv * 0.5; i++)
+  for (int i = 0; i <= (int) cdiv * 0.5; i++)
     {
 
       for (int j = 0; j < cdiv; j++)
@@ -420,35 +443,55 @@ printPolyLineHeader ("Thailand", 4, 1);;
 	  latlong.Long += dlong;
 	  en1 = latlong_to_EN (latlong);
 
-	  if (i == (int) cdiv * 0.25)
-	    printLine ("Equator", en.E, en.N, en1.E, en1.N, 7);
+	  /*if (i == (int) cdiv * 0.25)
+	     printLine ("Equator", en.E, en.N, en1.E, en1.N, 11);
+	     else
+	     printLine ("Lattitudes", en.E, en.N, en1.E, en1.N, 11);
+
+	   */
+	  if (i % 4 == 0)
+	    printLine ("Lattitudes", en.E, en.N, en1.E, en1.N, 11);
 	  else
 	    printLine ("Lattitudes", en.E, en.N, en1.E, en1.N, 8);
+
+
+
 
 	  en = latlong_to_EN (latlong);
 
 	}
+
+
+
+
+      sprintf (strText, "  %.2f deg", latlong.Lat);
+      printDXFtext (strText, "AiryText", 11, en1.E, en1.N, 0.8e4, 0.0, 0);
+
+
+
+
+
       latlong.Lat += dlat;
-      latlong.Long = -180.0;
+      latlong.Long = startLong;
       en = latlong_to_EN (latlong);
     }
 
 
 
-
+  memset (strText, 0, sizeof strText);
 
 
 
 
 
 //print merdians-----------------------------------------------------------------------
-  latlong.Long = -180.0;
-  latlong.Lat = -90.0;
+  latlong.Long = startLong;
+  latlong.Lat = startLat;
 
 
   for (int i = 0; i <= cdiv; i++)
     {
-      latlong.Lat = -90.0;
+      latlong.Lat = startLat;
       en = latlong_to_EN (latlong);
 
       for (int j = 0; j < (int) cdiv * 0.5; j++)
@@ -456,16 +499,32 @@ printPolyLineHeader ("Thailand", 4, 1);;
 	  latlong.Lat += dlat;
 	  en1 = latlong_to_EN (latlong);
 
-	  if (i == (int) cdiv / 2)
-	    printLine ("GreenwhichMerdian", en.E, en.N, en1.E, en1.N, 7);
+	  /*  if (i == (int) cdiv / 2)
+	     printLine ("GreenwhichMerdian", en.E, en.N, en1.E, en1.N, 11);
+	     else
+	     printLine ("Merdians", en.E, en.N, en1.E, en1.N, 11);
+	   */
+	  if (i % 4 == 0)
+	    printLine ("Merdians", en.E, en.N, en1.E, en1.N, 11);
 	  else
 	    printLine ("Merdians", en.E, en.N, en1.E, en1.N, 8);
 
+
 	  en = latlong_to_EN (latlong);
 	}
-      latlong.Lat = -90.0;
+
+
+
+
+      sprintf (strText, "  %.2f deg", latlong.Long);
+      printDXFtext (strText, "AiryText", 11, en1.E, en1.N, 0.8e4, 90.0, 0);
+
+
+      latlong.Lat = startLat;
       latlong.Long += dlong;
     }
+
+  memset (strText, 0, sizeof strText);
 
 //---------------------------------------------------------------------------
 
@@ -479,18 +538,18 @@ printPolyLineHeader ("Thailand", 4, 1);;
 /*
 The false origin is 400 km west and 100 km north of the ‘true
 origin’ on the central meridian at 49°N 2°W.
-
+*/
   latlong.Lat = 49.766809;
   latlong.Long = -7.5571598;
   en = latlong_to_EN (latlong);
-  printCirle ("OS_FO", en.E, en.N, 1e4, 3);
+  printCirle ("OS_FO", en.E, en.N, 1e4, 8);
 
   latlong.Lat = 49.0;
   latlong.Long = -2.0;
   en = latlong_to_EN (latlong);
-  printCirle ("OS_TO", en.E, en.N, 1e4, 3);
+  printCirle ("OS_TO", en.E, en.N, 1e4, 8);
 
-*/
+
 
 
   printDXFfooter ();
@@ -669,10 +728,6 @@ printMapwithDXFheadAndFoot ()
 //write out dxf data
   printDXFheader ();
   printMap ();
-
-
-
-
   printDXFfooter ();
 }
 
@@ -680,10 +735,7 @@ printMapwithDXFheadAndFoot ()
 void
 printMapLatLong (char *countryname)
 {
-
   readinLatLong (countryname);
-
-
 }
 
 
@@ -836,15 +888,10 @@ printMap ()
 {
 
 
-//read in data
+  //read in data in to a linked list
   createLineList ();
 
   drawOSGrid ();
-
-
-
-
-
 
 
   printCirle ("London", 538966.0, 177334.0, 8.9e6 / 100, 7);
@@ -872,8 +919,7 @@ printMap ()
 
 //Print the Polylines
 
-  printPolyLineHeader ("UKcoast", 2, 1);
-
+  printPolyLineHeader ("UKcoast", 7, 1);
 
 
 //read in map coords
@@ -946,12 +992,36 @@ printMap ()
 
 
 
-  printPolyLineHeader ("EireNI", 3, 1);;
-  printMapLatLong ("input/eire.csv");
+
+
+
+  printPolyLineHeader ("Eire", 76, 1);;
+  printMapLatLong ("input/EireSI.csv");
   printPolyLineFooter ();
 
 
 
+  printPolyLineHeader ("NI", 3, 1);;
+  printMapLatLong ("input/NI.csv");
+  printPolyLineFooter ();
+
+
+  printPolyLineHeader ("IsleOfWight", 4, 1);
+  printMapLatLong ("input/IsleOfWight.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("IsleOfMan", 4, 1);
+  readinLatLong ("input/IsleOfMan.csv");
+  printPolyLineFooter ();
+
+
+  printPolyLineHeader ("OrkneyIsles", 4, 1);
+  printMapLatLong ("input/Orkney.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("ShetlandIsles", 4, 1);
+  printMapLatLong ("input/Shetland.csv");
+  printPolyLineFooter ();
 
 
 
@@ -1241,7 +1311,7 @@ drawOSGrid ()
 	      xm1.y0 = dy;
 	      xm1.x1 = dx;
 	      xm1.y1 = dy + 1e5;
-	      xm1.colour = 8;
+	      xm1.colour = 5;
 	      t = insertLineafter (xm1, t);
 	    }
 	  if (i < 7)
@@ -1251,7 +1321,7 @@ drawOSGrid ()
 	      xm1.y0 = dy;
 	      xm1.x1 = dx + 1e5;
 	      xm1.y1 = dy;
-	      xm1.colour = 8;
+	      xm1.colour = 5;
 	      t = insertLineafter (xm1, t);
 	    }
 	  dx += 1e5;
@@ -1420,6 +1490,7 @@ generateNightingaleExample (int N)
 	      q = 0;
 
 	      memset (sNum, 0, sizeof sNum);
+
 	      memset (strText, 0, sizeof strText);
 	    }
 

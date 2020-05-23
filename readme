@@ -41,34 +41,19 @@ Choose from the text menu what to export to the output directory
 To use LibreCAD
 sudo apt install librecad
 
-from the tyCADv1/ouput
+from the cd tyCADv1/ouput
 librecad UKmapExample.dxf
 
 
 To use gnuplot
 sudo apt install gnuplot
 
+then from the CLI type:
 
 gnuplot 
-then paste in script
-
-type exit to leave gnuplot
-
-Plot the data using gnuplot script
-#gnuplot whole data set
-#set output 'SIR.png'
-set key autotitle columnhead
-set datafile separator ","
-set xrange [0:340]
-set yrange [0:350e6]
-set title "SIR"
-set xlabel "S(t), I(t), R(t)"
-set ylabel "S,I,R,I+R"
-plot 'SIR.dat' using 0:2 with lines ls 3 ti "S Data" , '' using 0:3 with lines ls 1 ti "I Data" , '' using 0:4 with lines ls 2 ti "R Data" , '' using 0:5 with lines lt rgb "violet" ti "I+R Data" 
-
 
 or just
 gnuplot SIRscriptfile -p
 
 
-
+SIRscriptfile is in the output directory
