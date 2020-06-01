@@ -23,6 +23,15 @@ SOLID     Four points defining the corners of the solid: (10, 20, 30),
 double degToRad = 0.017453292;
 
 
+
+void
+printWorldMapExample ()
+{
+  printDXFheader ();
+  print_lat_long_projection ();
+  printDXFfooter ();
+}
+
 void
 printblankDXF ()
 {
@@ -41,32 +50,334 @@ printblankDXF ()
 }
 
 
-
 void
-print_xyAxes (char *layername, int colour, double xmin, double xmax,
-	      double ymin, double ymax, int divX, int divY)
+print_xy_graph (char *filename, char *Title, char *legendX, char *legendY,
+		char *layername, int colour, int mode)
 {
 
 
-  printLine (layername, xmin, 0.0, xmax, 0.0, colour);
-  printLine (layername, 0.0, ymin, 0.0, ymax, colour);
+  printDXFheader ();
 
+
+/*go thorough csv data get max mins 
+	
+	* mode) plot either xdata,ydata or
+	* 0) x independent, x data
+	* 1) y independent, y data
+	* 
+	* would be better to take a more flexible approach so you can plot any or multiple columns of data
+	* against each other.  	
+
+*/
+
+  FILE *file;
+
+  file = fopen ("input/AllcoviddataUK.csv", "r");
+
+  char strText[30];
+
+
+  // double th = 0.5;
+
+  char c;
+  char c1;
+
+  char sNum[30];
+  memset (sNum, 0, sizeof sNum);
+
+  int q = 0;
+
+  double x = 0.0;
+  double y = 0.0;
+
+  double xold = 0.0;
+  double yold = 0.0;
+
+
+  int nData = 0;
+
+  if (file)
+    {
+
+      //get the first x and y coords
+
+      //get the max and min xy data
+
+      double xmax = 0.0;
+      double ymax = 0.0;
+
+      double xmin = 0.0;
+      double ymin = 0.0;
+
+
+
+
+
+
+
+      while (c != EOF || (int) c != 255)
+	{
+	  c = getc (file);
+
+	  if (c == EOF || (int) c == 255)
+	    break;
+
+	  if (c != ',' && c != ' ')
+	    {
+	      sNum[q] = c;
+	      q++;
+	    }
+
+	  if (c == ',')
+	    {
+	      x = atof (sNum);
+	      q = 0;
+	      memset (sNum, 0, sizeof sNum);
+
+
+
+	    }
+
+	  if (c == '\n')
+	    {
+	      nData++;
+	      y = atof (sNum);
+	      q = 0;
+	      memset (sNum, 0, sizeof sNum);
+
+
+	      // mode 2 plotting col1,col2
+	      if (x < xmin)
+		xmin = x;
+	      if (x > xmax)
+		xmax = x;
+	      if (y < ymin)
+		ymin = y;
+	      if (y > ymax)
+		ymax = y;
+
+	    }
+
+	}
+
+      printf ("999\n");
+      printf
+	("nData %d,  mode %d, xmin %f, ymin %f, ymin %f, ymax %f\n",
+	 nData, mode, xmin, ymin, xmax, ymax);
+
+
+      //part2
+
+
+
+      //option linear independent x axis not related to  
+      if (mode < 0 || mode > 3)
+	mode = 2;
+
+      if (mode == 0)
+	{
+	  xmin = 0.0;
+	  xmax = (double) nData;
+	}
+
+
+
+
+      if (mode == 1)
+	{
+	  xmin = ymin;
+	  xmax = ymax;
+	}
+
+
+
+
+
+      //Based roughly on fitting on A4 210mm, 297mm  paper at 1:1 for printing
+      double SX = 180.0;
+      double scaleX = SX / (xmax - xmin);
+      double SY = 250.0;
+      double scaleY = SY / (ymax - ymin);
+
+
+
+
+      double Pr = 0.5;		//point radius   
+      double scaleP;
+
+      //point radius scaled to graph
+      if (scaleX >= scaleY)
+	scaleP = Pr * scaleX;
+      else
+	scaleP = Pr * scaleY;
+
+
+      double th;
+
+      if (scaleX >= scaleY)
+	th = 3.0 * scaleX;
+      else
+	th = 3.0 * scaleY;
+
+      printf ("999\n");
+      printf
+	("SX %f ,SY %f, scaleX %f, scaleY %f, scaleP %f,th %f\n ", SX, SY,
+	 scaleX, scaleY, scaleP, th);
+
+      printf ("999\n");
+      printf
+	("Scaled xmin %f, Scaled xmax %f, Scaled ymin %f, Scaled ymax %f\n",
+	 xmin * scaleX, xmax * scaleX, ymin * scaleY, ymax * scaleY);
+
+
+      //draw the axes
+      print_xyAxes (layername, 1, xmin * scaleX, xmax * scaleX, ymin * scaleY,
+		    ymax * scaleY, 7, 7, scaleX, scaleY);
+
+      printDXFtext (legendX, "LegendXY", 1, (xmax + xmin) * 0.5 * scaleX, -5.0 * th, th, 0.0, 0);	//mid just
+      printDXFtext (legendY, "LegendXY", 1, -6.0 * th, (ymax + ymin) * 0.5 * scaleY, th, 90.0, 0);	//mid just
+      printDXFtext (Title, "LegendXY", 1, 2.0 * th, ymax * scaleY - 2.0 * th,
+		    th, 0.0, 0);
+
+
+      sprintf (strText, "Max. Number of Deaths: %.0f", ymax);
+      printDXFtext (strText, "LegendXY", 3, 2.0 * th,
+		    ymax * scaleY - 4.0 * th, th, 0.0, 0);
+      memset (strText, 0, sizeof strText);
+
+
+//go back through data and plot points
+
+      fseek (file, 0, SEEK_SET);
+
+
+
+
+      int i = 0;
+
+      while (c1 != EOF || (int) c1 != 255)
+	{
+
+	  c1 = getc (file);
+	  if (c1 == EOF || (int) c1 == 255)
+	    break;
+	  if (c1 != ',' && c1 != ' ')
+	    {
+	      sNum[q] = c1;
+	      q++;
+	    }
+
+	  if (c1 == ',')
+	    {
+	      //x = atof (sNum);
+	      x = (double) i;
+
+	      q = 0;
+	      memset (sNum, 0, sizeof sNum);
+	    }
+
+	  if (c1 == '\n')
+	    {
+	      y = atof (sNum);
+	      printf ("999\n");
+	      printf ("--------%f, %f ----- %f, %f, %f, %f\n",
+		      xold, yold, x, y, scaleX, scaleY);
+
+	      printLine (layername, xold * scaleX, yold * scaleY, x * scaleX,
+			 y * scaleY, 3);
+
+	      printCirle (layername, x * scaleX, y * scaleY, Pr * scaleP, 2);
+
+	      xold = x;
+	      yold = y;
+	      i++;
+
+
+	      q = 0;
+	      memset (sNum, 0, sizeof sNum);
+
+
+	    }
+
+
+
+	}
+
+
+      fclose (file);
+    }
+
+
+
+
+
+
+
+
+  printDXFfooter ();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+void
+print_xyAxes (char *layername, int colour, double xmin, double xmax,
+	      double ymin, double ymax, int divX, int divY, double oscaleX,
+	      double oscaleY)
+{
+
+
+  printLine (layername, xmin, 0.0, xmax, 0.0, colour);	// x axis
+
+
+  printLine (layername, 0.0, ymin, 0.0, ymax, colour);	// y yaxis
+
+
+
+  char strText[30];
   double dx = (xmax - xmin) / (double) divX;
   double dy = (ymax - ymin) / (double) divY;
 
   double x = xmin;
+  double y = ymin;
 
   for (int i = 0; i <= divX; i++)
     {
       printLine (layername, x, 0.0, x, -10.0, colour);
+
+      sprintf (strText, "%.0f", x / oscaleX);
+      printDXFtext (strText, layername, 1, x, y - 20.0, 3.0, 90.0, 0);
+      memset (strText, 0, sizeof strText);
+
       x += dx;
     }
 
-  double y = ymin;
+
 
   for (int i = 0; i <= divY; i++)
     {
       printLine (layername, 0.0, y, -10.0, y, colour);
+
+      sprintf (strText, "%.0f", y / oscaleY);
+      printDXFtext (strText, layername, 1, -30.0, y + 2, 3.0, 0.0, 0);
+      memset (strText, 0, sizeof strText);
+
       y += dy;
     }
 
@@ -211,22 +522,18 @@ print_lat_long_projection ()
   printPolyLineFooter ();
 
 
+  printPolyLineHeader ("Antartica", 4, 1);
+  readinLatLong1 ("input/Antartica.csv");
+  printPolyLineFooter ();
 
 
+  printPolyLineHeader ("Artic", 4, 1);
+  readinLatLong1 ("input/Artic.csv");
+  printPolyLineFooter ();
 
-
-  // printPolyLineHeader ("Antartica", 4, 1);
-  // readinLatLong1 ("input/Antartica.csv");
-  //printPolyLineFooter ();
-
-
-  // printPolyLineHeader ("Artic", 4, 1);
-  // readinLatLong1 ("input/Artic.csv");
-  //printPolyLineFooter ();
-
-  // printPolyLineHeader ("Japan", 4, 1);
-  // readinLatLong1 ("input/Japan.csv");
-  //printPolyLineFooter ();
+  printPolyLineHeader ("Japan", 4, 1);
+  readinLatLong1 ("input/Japan.csv");
+  printPolyLineFooter ();
 
 
   printPolyLineHeader ("Iceland", 4, 1);
@@ -236,6 +543,20 @@ print_lat_long_projection ()
   printPolyLineHeader ("SriLanka", 4, 1);
   readinLatLong1 ("input/SriLanka.csv");
   printPolyLineFooter ();
+
+  printPolyLineHeader ("Canada", 4, 1);
+  readinLatLong1 ("input/Canada.csv");
+  printPolyLineFooter ();
+
+
+  printPolyLineHeader ("NewZealand", 4, 1);
+  readinLatLong1 ("input/NewZealand.csv");
+  printPolyLineFooter ();
+
+  printPolyLineHeader ("PapaNewGuinea", 4, 1);
+  readinLatLong1 ("input/PapaNewGuinea.csv");
+  printPolyLineFooter ();
+
 
   printPolyLineHeader ("riw", 4, 1);
   readinLatLong1 ("input/riw.csv");
@@ -1108,6 +1429,44 @@ printCirle (char *layername, double cx, double cy, double R, int colour)
   printf ("0\n");
 }
 
+
+void
+printPoint (char *layername, double x0, double y0, int colour)
+{
+
+  /*POINT     10, 20, 30 (point).
+
+     Point entities have an optional 50 group that determines 
+     the orientation of PDMODE images. The group value is the 
+     negative of the Entity Coordinate Systems (ECS) angle of 
+     the UCS X axis in effect when the point was drawn. The X 
+     axis of the UCS in effect when the point was drawn is 
+     always parallel to the XY plane for the point's ECS, and 
+     the angle between the UCS X axis and the ECS X axis is a 
+     single 2D angle. The value in group 50 is the angle from 
+     horizontal (the effective X axis) to the ECS X axis. 
+     Entity Coordinate Systems (ECS) are described later in 
+     this section.
+   */
+  printf ("POINT\n");
+  printf ("8\n");
+  printf ("%s\n", layername);
+  printf ("62\n");
+  printf ("%d\n", colour);
+  printf ("10\n");
+  printf ("%f\n", x0);
+  printf ("20\n");
+  printf ("%f\n", y0);
+  printf ("30\n");
+  printf ("0.0\n");
+  printf ("0\n");
+
+
+
+
+}
+
+
 void
 printLine (char *layername, double x0, double y0, double x1, double y1,
 	   int colour)
@@ -1824,6 +2183,99 @@ NLines ()
 
 
 
+/* Create FE geometry to run through Frank Reig's z88 software
+ */
+
+void
+z88ExampleDXF ()
+{
+
+  char strText[32];
+
+  //write out dxf data
+  printDXFheader ();
+
+
+  sprintf (strText, "Z88NI.TXT 2 22 10 44 2 0 0 0 0 0");
+  printDXFtext (strText, "Z88GEN", 6, 100.0, 120.0, 10.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+  sprintf (strText, "MAT 1 1 7 206000 0.3 3 10");
+  printDXFtext (strText, "Z88GEN", 6, 100.0, 100.0, 10.0, 0.0, 0);
+
+  memset (strText, 0, sizeof strText);
+
+
+  double x = 0.0;
+  double L = 100.0;
+  int n = 10;
+  double dx = L / (double) n;
+
+
+
+  for (int i = 1; i <= n; i++)
+    {
+
+      printLine ("Z88NET", x, 0.0, x + dx, 0.0, 5);
+      printLine ("Z88NET", x + dx, 0.0, x + dx, 10.0, 5);
+      printLine ("Z88NET", x + dx, 10.0, x, 10.0, 5);
+      printLine ("Z88NET", x, 10.0, x, 0.0, 5);
+
+
+      sprintf (strText, "SE %d 7 7 1 E 1 E", i);	//( 1st SE, SE type7, FE type7, subdiv. x 3 times equid., y 3 times equid. )
+      printDXFtext (strText, "Z88EIO", 5, x + 0.2 * dx, 5.0, 0.5, 0.0, 0);
+
+      memset (strText, 0, sizeof strText);
+
+
+
+
+      printPoint ("Z88PKT", x, 0.0, 1);
+      printPoint ("Z88PKT", x + dx, 0.0, 1);
+      printPoint ("Z88PKT", x, 10.0, 1);
+      printPoint ("Z88PKT", x + dx, 10.0, 1);
+
+
+
+      sprintf (strText, "P %d", i);
+      printDXFtext (strText, "Z88KNR", 1, x, 0.0, 0.5, 0.0, 0);
+      memset (strText, 0, sizeof strText);
+
+      sprintf (strText, "P %d", 2 * n + 3 - i);
+      printDXFtext (strText, "Z88KNR", 1, x, 10.0, 0.5, 0.0, 0);
+      memset (strText, 0, sizeof strText);
+
+
+      if (i == n)
+	{
+	  sprintf (strText, "P %d", n + 1);
+	  printDXFtext (strText, "Z88KNR", 1, x + dx, 0.0, 0.5, 0.0, 0);
+	  memset (strText, 0, sizeof strText);
+
+	  sprintf (strText, "P %d", n + 2);
+	  printDXFtext (strText, "Z88KNR", 1, x + dx, 10.0, 0.5, 0.0, 0);
+	  memset (strText, 0, sizeof strText);
+	}
+
+
+
+
+
+
+
+      x += dx;
+
+    }
+
+
+
+
+
+
+  printDXFfooter ();
+
+
+}
 
 
 void

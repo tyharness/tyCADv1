@@ -22,6 +22,17 @@ struct LATLONG
   double Long;
 };
 
+struct XYZ
+{
+  double x;
+  double y;
+  double z;
+};
+
+
+
+
+
 struct tyLin
 {
   int key;
@@ -59,14 +70,41 @@ int NLines ();
 
 struct EN latlong_to_EN (struct LATLONG LatLong);
 
-void memsDevice ();
+struct XYZ latlong_to_XYZ (struct LATLONG LatLong);
+
+
+
 void printblankDXF ();
 void printDXFheader ();
 void printDXFfooter ();
+
+
+
+
+void
+print_xy_graph (char *filename, char *Title, char *legendX, char *legendY,
+		char *layername, int colour, int mode);
+
+
+
+void print_xyAxes (char *layername, int colour, double xmin, double xmax,
+		   double ymin, double ymax, int divX, int divY,
+		   double oscaleX, double oscaleY);
+
+
+void printPoint (char *layername, double x0, double y0, int colour);
+
+
+
 void printLine (char *layername, double x0, double y0, double x1, double y1,
 		int colour);
 
 void printCirle (char *layername, double cx, double cy, double R, int colour);
+
+void printDXFtext (char *text, char *layername, int colour, double x0,
+		   double y0, double h, double rot, int justify);
+
+
 void printPolyLineFooter ();
 
 
@@ -81,22 +119,24 @@ void printArc (char *layername, int colour, double x, double y, double r,
 void printWedgey (char *layername, int colour, double x, double y, double r,
 		  double StartAng, double incAng);
 
-
+void printWorldMapExample ();
+void print_lat_long_projection ();
+void print_lat_long_cylindrical_projection ();
 void print_wgs_to_OS ();
 void printMap ();
 void drawOSGrid ();
 void drawTest ();
 
-void convert_coviddataUK_to_COVID19dataUK(int mon,int year);
+void convert_coviddataUK_to_COVID19dataUK (int mon, int year);
 void generateHTMLtablefromCSVtest ();
 void generateFibonacciExample ();
 void generateNightingaleExample (int N);
 void printMapwithDXFheadAndFoot ();
 
 void readinLatLong (char *filename);
+void readinLatLong1 (char *filename);
 void printMapLatLong (char *countryname);
 
+void z88ExampleDXF ();
 void memsDeviceDXF ();
-
-
-
+void memsDevice ();
