@@ -72,12 +72,12 @@ print_xy_graph (char *filename, char *Title, char *legendX, char *legendY,
 
   FILE *file;
 
-  file = fopen ("input/AllcoviddataUK.csv", "r");
+  file = fopen (filename, "r");
+
 
   char strText[30];
 
 
-  // double th = 0.5;
 
   char c;
   char c1;
@@ -96,8 +96,13 @@ print_xy_graph (char *filename, char *Title, char *legendX, char *legendY,
 
   int nData = 0;
 
+
+
+
   if (file)
     {
+
+
 
       //get the first x and y coords
 
@@ -128,11 +133,15 @@ print_xy_graph (char *filename, char *Title, char *legendX, char *legendY,
 	      q++;
 	    }
 
+
 	  if (c == ',')
 	    {
 	      x = atof (sNum);
+	      if (mode == 0)
+		y = atof (sNum);
 	      q = 0;
 	      memset (sNum, 0, sizeof sNum);
+
 
 
 
@@ -141,7 +150,11 @@ print_xy_graph (char *filename, char *Title, char *legendX, char *legendY,
 	  if (c == '\n')
 	    {
 	      nData++;
-	      y = atof (sNum);
+	      if (mode == 1 || mode == 2)
+		y = atof (sNum);
+
+
+
 	      q = 0;
 	      memset (sNum, 0, sizeof sNum);
 
@@ -171,10 +184,10 @@ print_xy_graph (char *filename, char *Title, char *legendX, char *legendY,
 
 
       //option linear independent x axis not related to  
-      if (mode < 0 || mode > 3)
+      if (mode < 0 || mode > 2)
 	mode = 2;
 
-      if (mode == 0)
+      if (mode == 0 || mode == 1)
 	{
 	  xmin = 0.0;
 	  xmax = (double) nData;
@@ -183,7 +196,8 @@ print_xy_graph (char *filename, char *Title, char *legendX, char *legendY,
 
 
 
-      if (mode == 1)
+
+      if (mode == 2)
 	{
 	  xmin = ymin;
 	  xmax = ymax;
@@ -240,7 +254,7 @@ print_xy_graph (char *filename, char *Title, char *legendX, char *legendY,
 		    th, 0.0, 0);
 
 
-      sprintf (strText, "Max. Number of Deaths: %.0f", ymax);
+      sprintf (strText, "Max: %.0f", ymax);
       printDXFtext (strText, "LegendXY", 3, 2.0 * th,
 		    ymax * scaleY - 4.0 * th, th, 0.0, 0);
       memset (strText, 0, sizeof strText);
@@ -269,8 +283,15 @@ print_xy_graph (char *filename, char *Title, char *legendX, char *legendY,
 
 	  if (c1 == ',')
 	    {
-	      //x = atof (sNum);
-	      x = (double) i;
+
+	      if (mode == 0 || mode == 1)
+		x = (double) i;	// independent           
+
+	      if (mode == 0)
+		y = atof (sNum);	//pick the first col to plot on the y axis
+
+	      if (mode == 2)
+		x = atof (sNum);	//conventional x axis
 
 	      q = 0;
 	      memset (sNum, 0, sizeof sNum);
@@ -278,13 +299,21 @@ print_xy_graph (char *filename, char *Title, char *legendX, char *legendY,
 
 	  if (c1 == '\n')
 	    {
-	      y = atof (sNum);
+
+	      if (mode == 1 || mode == 2)
+		y = atof (sNum);
+
+
+
+
+
 	      printf ("999\n");
 	      printf ("--------%f, %f ----- %f, %f, %f, %f\n",
 		      xold, yold, x, y, scaleX, scaleY);
 
-	      printLine (layername, xold * scaleX, yold * scaleY, x * scaleX,
-			 y * scaleY, 3);
+	      if (i > 0)
+		printLine (layername, xold * scaleX, yold * scaleY,
+			   x * scaleX, y * scaleY, 3);
 
 	      printCirle (layername, x * scaleX, y * scaleY, Pr * scaleP, 2);
 
@@ -298,13 +327,20 @@ print_xy_graph (char *filename, char *Title, char *legendX, char *legendY,
 
 
 	    }
-
+	  printf ("999\n");
+	  printf ("File not read\n");
 
 
 	}
 
 
       fclose (file);
+    }
+  else
+    {
+
+
+
     }
 
 
@@ -1818,7 +1854,7 @@ generateNightingaleExample (int N)
 			    10.0 * cos (ang * degToRad),
 			    10.0 * sin (ang * degToRad), th, ang, 0);
 
-	      sprintf (strText, "%d/5/20", i + 1);
+	      sprintf (strText, "%d/6/20", i + 1);
 	      printDXFtext (strText, "NightingaleTextDate", 3,
 			    20.0 * cos (ang * degToRad),
 			    20.0 * sin (ang * degToRad), th, ang, 0);
@@ -2296,6 +2332,9 @@ memsDeviceDXF ()
 
   char *filename;
   filename = "input/mems1e.csv";
+  //filename = "input/square.dat";
+
+//filename = "input/circle.dat";
 
   FILE *file;
   char c;
@@ -2306,9 +2345,21 @@ memsDeviceDXF ()
   char sNum[30];
   int q = 0;
 
-  double dx = 0.0;
-  double dy = 0.0;
-  //double area = 0.0;
+  double x0 = 0.0;
+  double y0 = 0.0;
+
+  double x00 = 0.0;
+  double y00 = 0.0;
+
+  double x1 = 0.0;
+  double y1 = 0.0;
+
+  double area = 0.0;
+  double dA;
+
+  int i = 0;
+  char strText[32];
+
 
   if (file)
     {
@@ -2327,19 +2378,39 @@ memsDeviceDXF ()
 
 	  if (c == ',')
 	    {
-	      dx = atof (sNum);
+	      x1 = atof (sNum);
 	      q = 0;
 	      sNum[q] = '\0';
 	    }
 
 	  if (c == '\n')
 	    {
-	      dy = atof (sNum);
+	      y1 = atof (sNum);
 	      //printf("%f ---- %f\n",dx,dy);
-	      printPloyLineVertex ("mems1e", dx, dy, 0.0);
+	      printPloyLineVertex ("mems1e", x1, y1, 0.0);
 	      q = 0;
 	      sNum[q] = '\0';
+
+
+	      if (i == 0)
+		{
+		  x00 = x1;
+		  y00 = y1;
+		}
+
+	      if (i > 0)
+		{
+		  dA = x0 * y1 - x1 * y0;
+		  area += dA;
+		}
+
+	      x0 = x1;
+	      y0 = y1;
+	      i++;
+
+
 	    }
+
 
 
 
@@ -2352,27 +2423,60 @@ memsDeviceDXF ()
   printPolyLineFooter ();
 
 
-  /*
-     dx = -110.0; dy=10.0;
+  dA = x0 * y00 - x00 * y0;
+  area += dA;
+
+  area *= 0.5;
+
+  sprintf (strText, "Area = %4.3e [unit]^2", area);
+  printDXFtext (strText, "mems1eProperties", 1, 0.0, -50.0, 25.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
 
 
-     for (int i = 0;i <20;i++){
-     printPolyLineHeader ("mems1e_holes", 2, 1);
 
 
-     printPloyLineVertex ("mems1e_holes", dx, dy, 0.0);
-     printPloyLineVertex ("mems1e_holes", dx+40.0, dy, 0.0);
-     printPloyLineVertex ("mems1e_holes", dx+40.0, dy+100.0, 0.0);
-
-     printPloyLineVertex ("mems1e_holes", dx, dy, 0.0);
-     printPloyLineVertex ("mems1e_holes", dx+40.0, dy, 0.0);
-     printPloyLineVertex ("mems1e_holes", dx+40.0, dy+100.0, 0.0);
 
 
-     printPolyLineFooter ();
-     dy += 110.0;
-     }
-   */
+
+  double dx = -60.0;
+  double dy = 30.0;
+
+
+
+  double sy = (946.0 - 60.0) / 9;
+
+
+  for (int i = 0; i < 8; i++)
+    {
+      printPolyLineHeader ("mems1e_holes", 2, 1);
+
+
+      printPloyLineVertex ("mems1e_holes", dx, dy, 0.0);
+      printPloyLineVertex ("mems1e_holes", dx + 40.0, dy, 0.0);
+      printPloyLineVertex ("mems1e_holes", dx + 40.0, dy + sy, 0.0);
+
+
+
+
+
+
+
+
+      printPolyLineFooter ();
+
+
+      printPolyLineHeader ("mems1e_holes1", 1, 1);
+
+      printPloyLineVertex ("mems1e_holes", dx + 40.0 - 10.0, dy + sy, 0.0);
+      printPloyLineVertex ("mems1e_holes", dx - 10.0, dy, 0.0);
+      printPloyLineVertex ("mems1e_holes", dx - 10.0, dy + sy, 0.0);
+
+      printPolyLineFooter ();
+
+
+      dy += 110.0;
+    }
+
 
   printDXFfooter ();
 
@@ -2380,7 +2484,68 @@ memsDeviceDXF ()
 
 }
 
+void
+print2Dflange ()
+{
 
+  printDXFheader ();
+
+  double q = 100.0;		//straight line distance between holes
+
+
+
+  double R = 150.0;		//out flange radius
+  double Ri = 50.0;		//inner flange radius
+  double r = 7.0;		//hole radius
+  int nholes = 8;		//number of holes
+
+
+  double dtheta = (double) (360 / nholes) * degToRad;
+  double p = q / (2 * sin (dtheta * 0.5));	//Pitch circle radius
+
+
+  double theta = 0.0;
+
+  printCirle ("flange2D", 0.0, 0.0, R, 7);	//Outer dia
+  printCirle ("flange2D", 0.0, 0.0, Ri, 7);	//Inner dia
+  printCirle ("flange2D", 0.0, 0.0, p, 1);	//Pitch Circle Diameter
+
+//print holes
+  for (int i = 0; i < nholes; i++)
+    {
+      printCirle ("flange2D", p * cos (theta), p * sin (theta), r, 7);
+      theta += dtheta;
+    }
+
+
+  printDXFfooter ();
+
+}
+
+
+void
+exportPolylineCircle ()
+{
+
+
+
+
+
+  double R = 100.0;
+  double x = R;
+  double y = 0.0;
+  double theta = 0;
+  double dt = 3.142 / 180;
+
+  for (int i = 0; i < 359; i++)
+    {
+      x = R * cos (theta);
+      y = R * sin (theta);
+      printf ("%f,%f\n", x, y);
+      theta += dt;
+    }
+
+}
 
 
 

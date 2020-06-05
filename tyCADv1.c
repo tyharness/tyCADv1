@@ -33,6 +33,7 @@ To run
 #include "tydxfout.h"
 #include "tyMems1.h"
 #include "SIR.h"
+#include <time.h>
 
 
 #define WHITE_SQUARE "\33[48;5;15m"
@@ -45,13 +46,34 @@ typedef enum
 
 
 bool printhelp ();
-
+time_t rawtime;
 
 int
 main (int argc, char **argv)
 {
 
-  printhelp ();
+
+
+  struct tm *info;
+  char buffer[80];
+  time (&rawtime);
+
+  info = localtime (&rawtime);
+
+  strftime (buffer, 80, "%d", info);
+  int d = atoi (buffer);
+
+  strftime (buffer, 80, "%m", info);
+  int m = atoi (buffer);
+
+  strftime (buffer, 80, "%Y", info);
+  int y = atoi (buffer);
+
+  // printf("%d %d %d\n", d,m,y );
+
+
+
+  printhelp (d, m, y);
 
   return 0;
 
@@ -66,7 +88,7 @@ main (int argc, char **argv)
 
 
 bool
-printhelp ()
+printhelp (int d, int m, int y)
 {
 
 
@@ -96,7 +118,7 @@ printhelp ()
       printf
 	("|==============================================================================|\n");
       printf
-	("|0) DXF map and grid stdout                   1)file:ukMapExample.dxf          |\n");
+	("|0)file:WorldMapExample.dxf                   1)file:ukMapExample.dxf          |\n");
       printf
 	("|2) DXF Nightinggale/Fibonacci Example stdout 3)file:FibonacciExample.dxf      |\n");
       printf
@@ -104,13 +126,20 @@ printhelp ()
       printf
 	("|6) Generate html table for covid-19 csv data and Nightingale Pie Chart[dxf]   |\n");
       printf
+	("|7) Generate xy graph example files:                                           |\n");
+      printf
 	("|8) Generate gnuplot script SIR Example       9)file:SIR.dat                   |\n");
       printf
 	("|10)Generate Airy1830 Example                 11)Airy1830.dxf                  |\n");
       printf
 	("|12)Mems Device Example: mems1e.dxf                                            |\n");
+
+      printf
+	("|13)Z88 FE Example: z88x.dxf                                                   |\n");
       printf
 	("|==============================================================================|\n");
+
+
       printf
 	("| Press Ctrl c to quit at any time                                             |\n");
       printf
@@ -134,7 +163,7 @@ printhelp ()
       if (strcmp (strChoice, "6\n") == 0)
 	choice = 6;
       if (strcmp (strChoice, "7\n") == 0)
-	choice = 7;
+	choice = 400;
       if (strcmp (strChoice, "8\n") == 0)
 	choice = 8;
       if (strcmp (strChoice, "9\n") == 0)
@@ -147,12 +176,19 @@ printhelp ()
 	choice = 12;
 
 
+      if (strcmp (strChoice, "cfr\n") == 0)
+	choice = 100;
 
 
 
       if (strcmp (strChoice, "b\n") == 0)
 	choice = 200;
 
+      if (strcmp (strChoice, "flange\n") == 0)
+	choice = 300;
+
+      if (strcmp (strChoice, "xy\n") == 0)
+	choice = 400;
 
 
     }
@@ -162,7 +198,14 @@ printhelp ()
   system ("clear");
 
   if (choice == 0)
-    printMap ();
+    {
+      printf ("WorldMapExample.dxf exported to output directory...\n");
+      stdout = freopen ("output/WorldMapExample.dxf", "w", stdout);
+      printWorldMapExample ();
+    }
+
+
+
   if (choice == 1)
     {
       printf ("ukMapExample.dxf exported to output directory...\n");
@@ -181,26 +224,70 @@ printhelp ()
 
   if (choice == 4)
     generateNightingaleExample (30);
+
   if (choice == 5)
     {
+
+      int nd = 31;
+
+      if (m == 4 || m == 6 || m == 8 || m == 11)
+	nd = 30;
+      //leap year cheeck
+      if (m == 2)
+	nd = 28;
+      if (y % 4 == 0 && y % 100 != 100)
+	nd = 29;
+
       printf ("NightingaleExample.dxf exported to output directory...\n");
       stdout = freopen ("output/NightingaleExample.dxf", "w", stdout);
-      generateNightingaleExample (31);
+      generateNightingaleExample (nd);
     }
 
 
   if (choice == 6)
     {
       stdout = freopen ("input/COVID19dataUK.csv", "w", stdout);
-      convert_coviddataUK_to_COVID19dataUK (5, 20);
+      convert_coviddataUK_to_COVID19dataUK (6, 20);
 
       stdout = freopen ("output/cfrTableHTML.txt", "w", stdout);
       generateHTMLtablefromCSVtest ();
 
+      int nd = 31;
+
+      if (m == 4 || m == 6 || m == 8 || m == 11)
+	nd = 30;
+      //leap year cheeck
+      if (m == 2)
+	nd = 28;
+      if (y % 4 == 0 && y % 100 != 100)
+	nd = 29;
+
+
       stdout = freopen ("output/NightingaleExample.dxf", "w", stdout);
-      generateNightingaleExample (31);
+      generateNightingaleExample (nd);
+
+
+      stdout = freopen ("output/XYdataexampleCovidDeathsUK.dxf", "w", stdout);
+
+      char strText[30];
+      sprintf (strText, "COVID Deaths 1/3/2020 - %d/%d/%d", d, m, y);
+
+      print_xy_graph ("input/AllcoviddataUK.csv", strText, "Days",
+		      "Total COVID19 UK Deaths", "XYdata", 7, 0);
+
+      memset (strText, 0, sizeof strText);
+      sprintf (strText, "COVID Cases 1/3/2020 - %d/%d/%d", d, m, y);
+
+      stdout = freopen ("output/XYdataexampleCovidCasesUK.dxf", "w", stdout);
+      print_xy_graph ("input/AllcoviddataUK.csv", strText, "Days",
+		      "Total COVID19 UK cases", "XYdata", 7, 1);
+
+
+
 
     }
+
+
 
 
   if (choice == 8)
@@ -214,6 +301,8 @@ printhelp ()
 
   if (choice == 10)
     print_wgs_to_OS ();
+
+
   if (choice == 11)
     {
       printf ("Airy1830.dxf exported to output directory...\n");
@@ -224,16 +313,34 @@ printhelp ()
 
   if (choice == 12)
     {
+
+
+
+
       printf ("mems1e.dxf exported to output directory...\n");
 
       //generate the polyline data first
       stdout = freopen ("input/mems1e.csv", "w", stdout);
       mems1e ();
+
+      // printf ("circle.dat exported to output directory...\n");     
+      //stdout = freopen ("input/circle.dat", "w", stdout); 
+      //  exportPolylineCircle();
+
+
+
       //then generate the dxf
       stdout = freopen ("output/mems1e.dxf", "w", stdout);
       memsDeviceDXF ();
     }
 
+  if (choice == 13)
+    {
+      printf ("z88.dxf exported to output directory...\n");
+      //then generate the dxf
+      stdout = freopen ("output/z88x.dxf", "w", stdout);
+      z88ExampleDXF ();
+    }
 
 
 
@@ -242,7 +349,25 @@ printhelp ()
 
   if (choice == 100)
     {
-      printMapLatLong ("input/eire.csv");
+
+      int nDeaths = 0;
+      int nCases = 0;
+
+      printf ("Enter Daily death rate ");
+      scanf ("%d", &nDeaths);
+
+      printf ("Enter Confirmed Cases ");
+      scanf ("%d", &nCases);
+
+
+
+      stdout = freopen ("input/coviddataUK.csv", "a", stdout);
+      printf ("%d,%d", nDeaths, nCases);
+
+      stdout = freopen ("input/AllcoviddataUK.csv", "a", stdout);
+      printf ("%d,%d", nDeaths, nCases);
+
+
     }
 
 
@@ -251,6 +376,35 @@ printhelp ()
       printf ("blank.dxf exported to output directory...\n");
       stdout = freopen ("output/blank.dxf", "w", stdout);
       printblankDXF ();
+    }
+
+  if (choice == 300)
+    {
+
+      printf ("flange2d.dxf exported to output directory...\n");
+      stdout = freopen ("output/flange2d.dxf", "w", stdout);
+      print2Dflange ();
+    }
+
+
+
+  if (choice == 400)
+    {
+      printf ("XYexample.dxf exported to output directory...\n");
+
+      stdout = freopen ("output/XYdatatest1mode0.dxf", "w", stdout);
+      print_xy_graph ("input/xytestdata.dat", "test mode 0", "xind", "col1",
+		      "test1", 7, 0);
+
+      stdout = freopen ("output/XYdatatest1mode1.dxf", "w", stdout);
+      print_xy_graph ("input/xytestdata.dat", "test mode 1", "xind", "col2",
+		      "test2", 7, 1);
+
+      stdout = freopen ("output/XYdatatest1mode2.dxf", "w", stdout);
+      print_xy_graph ("input/xytestdata.dat", "test mode 2", "col1", "col2",
+		      "test3", 7, 2);
+
+
     }
 
 
