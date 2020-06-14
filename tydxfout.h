@@ -78,8 +78,8 @@ void printblankDXF ();
 void printDXFheader ();
 void printDXFfooter ();
 
-
-
+void exportPolylineCircle();
+void print2Dflange();
 
 void
 print_xy_graph (char *filename, char *Title, char *legendX, char *legendY,

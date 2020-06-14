@@ -48,12 +48,19 @@ void
 generateSIRdata ()
 {
 
+/*
+ * UK Population Model N=60e6(above): 
+ * (1 infected, do nothing no intervention R=4.7 [./SIR 60e6 0.0714286 1 4.7 500 >> SIR.dat]),
+(1 infected, Moderate Social Distancing R=1.5 [./SIR 60e6 0.0714286 10000 1.5 500 >> SIR.dat]),
+(1 infected, Aggressive Social Distancing R=0.5[./SIR 60e6 0.0714286 10000 0.5 500 >> SIR.dat])
+*/
 
-  N = 330e6;
-  gamm = 1.0 / 14.0;
-  I0 = 1.0;
+
+  N = 60e6;
+  gamm = 0.0714286; //1.0 / 14.0;
+  I0 = 1;
   R0 = 4.7;
-  MaxTime = 240.0;
+  MaxTime = 500.0;
 
 
   S0 = N - 1;

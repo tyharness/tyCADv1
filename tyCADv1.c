@@ -30,6 +30,7 @@ To run
 #include <string.h>
 #include <unistd.h>
 #include <math.h>
+#include "tyCADv1.h"
 #include "tydxfout.h"
 #include "tyMems1.h"
 #include "SIR.h"
@@ -41,24 +42,41 @@ To run
 #define BLACK_PIECE "\33[38;5;1m"
 #define WHITE_PIECE "\33[38;5;2m"
 #define ANSI_RESET  "\33[m"
-typedef enum
-{ false, true } bool;
+
 
 
 bool printhelp ();
 time_t rawtime;
+time_t current_time;
+
+
 
 int
 main (int argc, char **argv)
 {
 
 
+  DEBUG = true;
 
   struct tm *info;
   char buffer[80];
   time (&rawtime);
 
+  char *time_string;
   info = localtime (&rawtime);
+
+
+
+
+  if (DEBUG)
+    debugfile = fopen ("output/debug.txt", "w+");
+
+  current_time = time (NULL);
+  time_string = ctime (&current_time);
+
+  if (DEBUG)
+    fprintf (debugfile, "%s %s\n", "Debug file opened", time_string);
+
 
   strftime (buffer, 80, "%d", info);
   int d = atoi (buffer);
@@ -74,6 +92,22 @@ main (int argc, char **argv)
 
 
   printhelp (d, m, y);
+
+
+
+
+  current_time = time (NULL);
+  time_string = ctime (&current_time);
+
+  if (DEBUG)
+    {
+      fprintf (debugfile, "Close debug file %s", time_string);
+
+      fclose (debugfile);
+    }
+
+
+
 
   return 0;
 
@@ -135,7 +169,7 @@ printhelp (int d, int m, int y)
 	("|12)Mems Device Example: mems1e.dxf                                            |\n");
 
       printf
-	("|13)Z88 FE Example: z88x.dxf                                                   |\n");
+	("|13)Z88 FE Example: Generate all the z88 input files in output/z88example      |\n");
       printf
 	("|==============================================================================|\n");
 
@@ -174,12 +208,12 @@ printhelp (int d, int m, int y)
 	choice = 11;
       if (strcmp (strChoice, "12\n") == 0)
 	choice = 12;
+      if (strcmp (strChoice, "13\n") == 0)
+	choice = 13;
 
 
       if (strcmp (strChoice, "cfr\n") == 0)
 	choice = 100;
-
-
 
       if (strcmp (strChoice, "b\n") == 0)
 	choice = 200;
@@ -189,6 +223,9 @@ printhelp (int d, int m, int y)
 
       if (strcmp (strChoice, "xy\n") == 0)
 	choice = 400;
+
+
+
 
 
     }
@@ -334,15 +371,67 @@ printhelp (int d, int m, int y)
       memsDeviceDXF ();
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
   if (choice == 13)
     {
-      printf ("z88.dxf exported to output directory...\n");
-      //then generate the dxf
-      stdout = freopen ("output/z88x.dxf", "w", stdout);
-      z88ExampleDXF ();
+      printf ("z88 input files exported to output/z88example directory...\n");
+
+
+      /*Using z88 Beam13 element to descrive a cantilever beam problem bp5 */
+
+      int nMaterials = 1;
+      int nElements = 9;
+      int nNodes = 10;
+      int matNo = 1;
+      double E = 1.08e11;
+      double Poisson = 0.3;
+
+
+      double d = 10e-6;
+
+      double A = d * d;
+      double maxdistz = d * 0.5;
+      double Izz = (d * d * d * d) / 12;	//db^3/12  
+
+      double L = 1e-3;		//length of cantilever
+
+
+      stdout = freopen ("output/z88example/z88i1.txt", "w", stdout);
+      z88v15z88i1 (L, nElements, nNodes);
+
+      stdout = freopen ("output/z88example/z88i2.txt", "w", stdout);
+      z88v15z88i2 ();
+
+
+      stdout = freopen ("output/z88example/z88int.txt", "w", stdout);
+      z88v15z88int ();
+
+      stdout = freopen ("output/z88example/z88man.txt", "w", stdout);
+      z88v15z88man ();
+
+
+      stdout = freopen ("output/z88example/z88mat.txt", "w", stdout);
+      z88v15z88mat (nMaterials, nElements);
+
+      stdout = freopen ("output/z88example/51.txt", "w", stdout);
+      z88v15z88_51 (matNo, E, Poisson);
+
+      stdout = freopen ("output/z88example/z88elp.txt", "w", stdout);
+      z88v15z88elp (nElements, A, Izz, maxdistz);
+
     }
-
-
 
 
 
@@ -362,13 +451,15 @@ printhelp (int d, int m, int y)
 
 
       stdout = freopen ("input/coviddataUK.csv", "a", stdout);
-      printf ("%d,%d", nDeaths, nCases);
+      printf ("%d,%d\n", nDeaths, nCases);
 
       stdout = freopen ("input/AllcoviddataUK.csv", "a", stdout);
-      printf ("%d,%d", nDeaths, nCases);
+      printf ("%d,%d\n", nDeaths, nCases);
 
 
     }
+
+
 
 
   if (choice == 200)
@@ -387,9 +478,10 @@ printhelp (int d, int m, int y)
     }
 
 
-
   if (choice == 400)
     {
+      //just some sample xy graphs for debugging
+
       printf ("XYexample.dxf exported to output directory...\n");
 
       stdout = freopen ("output/XYdatatest1mode0.dxf", "w", stdout);
@@ -406,10 +498,6 @@ printhelp (int d, int m, int y)
 
 
     }
-
-
-
-
 
 
 
