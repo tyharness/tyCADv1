@@ -128,7 +128,9 @@ void drawOSGrid ();
 void drawTest ();
 
 void convert_coviddataUK_to_COVID19dataUK (int mon, int year);
-void generateHTMLtablefromCSVtest ();
+
+void generateHTMLtablefromCSVtest (int day, int mon, int year);
+
 void generateFibonacciExample ();
 void generateNightingaleExample (int N);
 void printMapwithDXFheadAndFoot ();
@@ -137,6 +139,9 @@ void readinLatLong (char *filename);
 void readinLatLong1 (char *filename);
 void printMapLatLong (char *countryname);
 
-void z88ExampleDXF ();
-void memsDeviceDXF ();
-void memsDevice ();
+
+void Z88printPoint (double x0, double y0);
+void Z88printLine (double x0, double y0,double x1, double y1);
+
+void Z88printDXFtext(char *text, double x0, double y0,
+	      double h);

@@ -30,11 +30,15 @@ To run
 #include <string.h>
 #include <unistd.h>
 #include <math.h>
+#include <time.h>
 #include "tyCADv1.h"
 #include "tydxfout.h"
 #include "tyMems1.h"
 #include "SIR.h"
-#include <time.h>
+#include "tyZ88.h"
+
+
+
 
 
 #define WHITE_SQUARE "\33[48;5;15m"
@@ -117,7 +121,31 @@ main (int argc, char **argv)
 
 /*==================Main menu screen and help page==============================================================*/
 
+void
+caseFatalityRate ()
+{
 
+  int nDeaths = 0;
+  int nCases = 0;
+
+
+
+  printf ("Enter Daily death rate ");
+  scanf ("%d", &nDeaths);
+
+  printf ("Enter Confirmed Cases ");
+  scanf ("%d", &nCases);
+
+  printf ("...exported to output directory...\n");
+
+  stdout = freopen ("input/coviddataUK.csv", "a", stdout);
+  printf ("%d,%d\n", nDeaths, nCases);
+
+  stdout = freopen ("input/AllcoviddataUK.csv", "a", stdout);
+  printf ("%d,%d\n", nDeaths, nCases);
+
+
+}
 
 
 
@@ -166,10 +194,11 @@ printhelp (int d, int m, int y)
       printf
 	("|10)Generate Airy1830 Example                 11)Airy1830.dxf                  |\n");
       printf
-	("|12)Mems Device Example: mems1e.dxf                                            |\n");
-
+	("|12)Mems Device Example  : output/mems1e.dxf  output/z88example/z88x.dxf       |\n");
       printf
-	("|13)Z88 FE Example: Generate all the z88 input files in output/z88example      |\n");
+	("|13)Z88 FE Example: Generate all the z88 input files in output/z88example/z88i*|\n");
+
+
       printf
 	("|==============================================================================|\n");
 
@@ -210,6 +239,9 @@ printhelp (int d, int m, int y)
 	choice = 12;
       if (strcmp (strChoice, "13\n") == 0)
 	choice = 13;
+
+      if (strcmp (strChoice, "z88\n") == 0)
+	choice = 14;
 
 
       if (strcmp (strChoice, "cfr\n") == 0)
@@ -281,14 +313,32 @@ printhelp (int d, int m, int y)
     }
 
 
+
+
+/*====================================================================*/
+
+
+
+
   if (choice == 6)
     {
+
+      printf ("Generate CFR graphs and tables...\n");
+
+      //ask user for latest data:
+      caseFatalityRate ();
+
+
+
       stdout = freopen ("input/COVID19dataUK.csv", "w", stdout);
-      convert_coviddataUK_to_COVID19dataUK (6, 20);
+      convert_coviddataUK_to_COVID19dataUK (m, y);
 
       stdout = freopen ("output/cfrTableHTML.txt", "w", stdout);
-      generateHTMLtablefromCSVtest ();
+      generateHTMLtablefromCSVtest (d, m, y);
 
+
+
+      //the number of days in the month
       int nd = 31;
 
       if (m == 4 || m == 6 || m == 8 || m == 11)
@@ -300,13 +350,22 @@ printhelp (int d, int m, int y)
 	nd = 29;
 
 
-      stdout = freopen ("output/NightingaleExample.dxf", "w", stdout);
+
+
+
+
+      char strText[30];
+
+      sprintf (strText, "output/NightingaleExample_%d_%d_%d.dxf", d, m, y);
+
+
+      stdout = freopen (strText, "w", stdout);
       generateNightingaleExample (nd);
 
 
       stdout = freopen ("output/XYdataexampleCovidDeathsUK.dxf", "w", stdout);
 
-      char strText[30];
+      memset (strText, 0, sizeof strText);
       sprintf (strText, "COVID Deaths 1/3/2020 - %d/%d/%d", d, m, y);
 
       print_xy_graph ("input/AllcoviddataUK.csv", strText, "Days",
@@ -325,6 +384,9 @@ printhelp (int d, int m, int y)
     }
 
 
+
+
+/*====================================================================*/
 
 
   if (choice == 8)
@@ -351,9 +413,6 @@ printhelp (int d, int m, int y)
   if (choice == 12)
     {
 
-
-
-
       printf ("mems1e.dxf exported to output directory...\n");
 
       //generate the polyline data first
@@ -369,6 +428,15 @@ printhelp (int d, int m, int y)
       //then generate the dxf
       stdout = freopen ("output/mems1e.dxf", "w", stdout);
       memsDeviceDXF ();
+
+
+
+      //some additional files that generate by z88x
+
+
+
+
+
     }
 
 
@@ -392,8 +460,8 @@ printhelp (int d, int m, int y)
       /*Using z88 Beam13 element to descrive a cantilever beam problem bp5 */
 
       int nMaterials = 1;
-      int nElements = 9;
-      int nNodes = 10;
+      int nElements = 2;
+      int nNodes = 3;
       int matNo = 1;
       double E = 1.08e11;
       double Poisson = 0.3;
@@ -431,39 +499,74 @@ printhelp (int d, int m, int y)
       stdout = freopen ("output/z88example/z88elp.txt", "w", stdout);
       z88v15z88elp (nElements, A, Izz, maxdistz);
 
+      stdout = freopen ("output/z88example/z88i5.txt", "w", stdout);
+      z88v15z88i5 ();
+
+
     }
 
 
 
+  if (choice == 14)
+    {
+
+
+      int nMaterials = 1;
+      int nElements = 2;
+      //int nNodes = 3;
+      int matNo = 1;
+      double E = 1.08e11;
+      double Poisson = 0.3;
+
+
+      double d = 10e-6;
+
+      double A = d * d;
+      double maxdistz = d * 0.5;
+      double Izz = (d * d * d * d) / 12;	//db^3/12  
+
+      double L = 1e-3;		//length of cantilever          
+
+
+      printf
+	("z88x.dxf,z88int,z88mat,z88man,51,z88elp exported to output directory...\n");
+
+      stdout = freopen ("output/z88example/z88int.txt", "w", stdout);
+      z88v15z88int ();
+
+      stdout = freopen ("output/z88example/z88man.txt", "w", stdout);
+      z88v15z88man ();
+
+
+      stdout = freopen ("output/z88example/z88mat.txt", "w", stdout);
+      z88v15z88mat (nMaterials, nElements);
+
+      stdout = freopen ("output/z88example/51.txt", "w", stdout);
+      z88v15z88_51 (matNo, E, Poisson);
+
+      stdout = freopen ("output/z88example/z88elp.txt", "w", stdout);
+      z88v15z88elp (nElements, A, Izz, maxdistz);
+
+
+
+
+      stdout = freopen ("output/z88example/z88x.dxf", "w", stdout);
+      z88ExampleDXF (L);
+    }
+
+
+/*non documented functions*/
 
   if (choice == 100)
     {
-
-      int nDeaths = 0;
-      int nCases = 0;
-
-      printf ("Enter Daily death rate ");
-      scanf ("%d", &nDeaths);
-
-      printf ("Enter Confirmed Cases ");
-      scanf ("%d", &nCases);
-
-
-
-      stdout = freopen ("input/coviddataUK.csv", "a", stdout);
-      printf ("%d,%d\n", nDeaths, nCases);
-
-      stdout = freopen ("input/AllcoviddataUK.csv", "a", stdout);
-      printf ("%d,%d\n", nDeaths, nCases);
-
-
+      //test the user input function
+      caseFatalityRate ();
     }
-
-
 
 
   if (choice == 200)
     {
+      /*generate  a blank dxf file */
       printf ("blank.dxf exported to output directory...\n");
       stdout = freopen ("output/blank.dxf", "w", stdout);
       printblankDXF ();

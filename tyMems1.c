@@ -7,19 +7,19 @@
 #include "tydxfout.h"
 #include "tyMath.h"
 #include "tyMems1.h"
+#include "tyZ88.h"
 
 
-
-/*
-Generate the mems1e design using polyline data and write the polyline
-* to stdout or file
-*/
 
 
 
 void
 mems1e ()
 {
+/*
+Generate the mems1e design using polyline data and write the polyline
+* to stdout or file
+*/
 
 
   int n = 80;
@@ -354,7 +354,7 @@ memsDeviceDXF ()
 		0);
   memset (strText, 0, sizeof strText);
 
-  sprintf (strText, "Planar thickness of = %4.3e [um]", pt * 1e-6);	//just afor printing
+  sprintf (strText, "Planar thickness of = %4.3e [um]", pt);	//just afor printing
   printDXFtext (strText, "mems1eProperties", 7, -1000.0, -200.0, 25.0, 0.0,
 		0);
   memset (strText, 0, sizeof strText);
@@ -394,167 +394,153 @@ memsDeviceDXF ()
 }
 
 
-
-
-
-void
-z88v15z88mat (int nMaterials, int nElements)
-{
-
-/*this needs to handle mulitple materials but to get going I'm just using 1*/
-
-  printf ("%d\n", nMaterials);
-  printf ("1 %d 51.txt\n", nElements);
-
-}
+/* Create FE geometry to run through Frank Reig's z88 software
+ */
 
 void
-z88v15z88_51 (int matNo, double E, double Poisson)
-{
-//printf("+1.08000E+011 +3.00000E-001"); 
-  printf ("%e %e\n", E, Poisson);
-}
-
-
-
-
-
-
-void
-z88v15z88man ()
+z88ExampleDXF (double Length)
 {
 
-  printf ("DYNAMIC START\n\n");
-
-  printf ("GLOBAL START\n");
-  printf ("IBFLAG 1\n");
-  printf ("IPFLAG 0\n");
-  printf ("IHFLAG 0\n");
-  printf ("SIMCASE 1\n");
-  printf ("GLOBAL END \n\n");
-
-  printf ("SOLVER START\n");
-  printf ("MAXIT 5000\n");
-  printf ("EPS 0.0000001\n");
-  printf ("RALPHA\n");
-  printf ("ROMEGA 0.9\n");
-  printf ("SOLVER END\n\n");
-
-  printf ("STRESS START\n");
-  printf ("KDFLAG 1\n");
-  printf ("ISFLAG 0\n");
-  printf ("STRESS END\n\n");
-
-  printf ("DYNAMIC END\n");
+/*
+ * Z88GEN: Layer for general information (1st input group in the mesh generator input file
+Z88NI.TXT and general structure data file Z88I1.TXT).
+* 
+* 
+Z88KNR: Layer including the node numbers.
+* 
+* 
+* 
+* 
+Z88EIO: Layer including the element information like element type and in the case of mesh
+generator input file Z88NI.TXT control information for the mesh generator.
+* 
+* 
+* 
+Z88NET: Layer containing the mesh which was drawn or outlined in defined order.
+* 
+* 
+Z88RBD: Layer containing the contents of the boundary conditions file Z88I2.TXT.
+Z88FLA: Layer containing the surface and pressure loads as defined for Z88I5.TXT
 
 
-}
+A further layer, Z88PKT, is produced by Z88X if you convert from Z88 to CAD. It shows all
+nodes with a point marker in order to better recognize the nodes. For the reverse step, from
+CAD to Z88, it is completely insignificant.
+*/
 
 
 
-void
-z88v15z88elp (int nElements, double A, double Izz, double maxdistz)
-{
 
 
-  /*beam 13
-     > Cross-sectional area QPARA
-     > insert 0 for second moment of inertia I yy (bending around y-y axis)
-     > insert 0 for max. distance e yy from neutral axis y-y
-     > Second moment of inertia I zz (bending around z-z axis)
-     > Max. distance e zz from neutral axis z-z
-     > insert 0 for second moment of area (torsion)
+
+
+  double x = 0.0;
+
+  int n = 9;			//number of elements
+  double dx = Length / (double) n;
+
+
+  double th = 0.1 * dx;		//text height
+  double tt = 0.5 * dx;
+
+  char strText[32];
+
+  //write out dxf data
+  //printDXFheader ();
+  z88xHeader ();
+
+  /*Z88GEN: Layer for general information (1st input group in the mesh generator input file
+     Z88NI.TXT and general structure data file Z88I1.TXT).
+     * 
+     * 1 st number: Dimension of the structure (2 or 3) [Long]
+     2 nd number: Number of nodes of the FEA structure [Long]
+     3 rd number: Number of elements [Long]
+     4 th number: Number of degrees of freedom [Long]
+     5 th number: Coordinate flag KFLAG (0 or 1) [Long]. Attention: This position was in former
+     Z88 versions reserved for the number of materials NEG.
+     * 
+     * Z88I1.TXT 2 3 2 9 0
    */
 
-
-
-  printf ("1\n");
-  //printf("1 9 +1.00000E-010 0 0 +8.33333E-022 +5.00000E-006 0 0\n");        
-  printf ("1 %d %e %e %e %e %e %e %e\n", nElements, A, 0.0, 0.0, Izz,
-	  maxdistz, 0.0, 0.0);
-
-
-}
-
-
-
-void
-z88v15z88int ()
-{
-  printf ("\n");
-}
-
-
-void
-z88v15z88i2 ()
-{
-
-  printf ("%d Number of BC\n", 5);
-  printf ("1 1 2 0.00000E+000  Node1  disp x\n");
-  printf ("1 2 2 0.00000E+000  Node1  disp y\n");
-  printf ("1 3 2 0.00000E+000  Node1  rotation\n");
-  printf ("10 3 2 0.00000E+000 Node10 rotation\n");
-  printf ("10 2 1 -1.0000E-006 Node 10 Load y\n");
-
-
-}
+  sprintf (strText, "Z88I1.TXT 2 %d %d %d 0", n + 1, n, 3 * (n + 1));
+  printDXFtext (strText, "Z88GEN", 256, tt, tt, th, 0.0, 0);
+  memset (strText, 0, sizeof strText);
 
 
 
 
-
-void
-z88v15z88i1 (double L, int nElements, int nNodes)
-{
+  int m = 4;			//No of loads/boundary conditions
 
 
+  sprintf (strText, "Z88I2.TXT %d", m);
+  printDXFtext (strText, "Z88RBD", 256, tt, -2 * tt, th, 0.0, 0);
+  memset (strText, 0, sizeof strText);
 
-  //double L = 1e-3; //length of cantilever 1mm
 
-  int nModel = 2;		// 2D Model
-  //int nElements = 9;    //Number of elements
-  //int nNodes = 10;      //Number of nodes
+  /*2 nd input group:
+     The boundary conditions and loads are defined. For every boundary condition and for every
+     load one line, respectively.
+     1st number: node number with boundary condition: load or constraint [Long]
+     2nd number: Respective degree of freedom (1,2,3,4,5,6) [Long]
+     3rd number: Condition flag: 1 = force [Long] or 2 = displacement [Long]
+     4th number: Value of the load or displacement [Double]
+     * */
 
-  int etype = 13;		//Element type Beam 13
-  int etypeDOF = 3;		// 3DOF x,y, theta
 
-  int tDOF = etypeDOF * nNodes;
-  int coords = 0;		//0 for cartesian and 1 for polar
 
-  //int nMaterials = 1;
+  printDXFtext ("RBD 1 1 1 2   0.00000E+000", "Z88RBD", 256, tt, -3 * tt, th,
+		0.0, 0);
+  printDXFtext ("RBD 2 1 2 2   0.00000E+000", "Z88RBD", 256, tt, -4 * tt, th,
+		0.0, 0);
+  printDXFtext ("RBD 3 1 3 2   0.00000E+000", "Z88RBD", 256, tt, -5 * tt, th,
+		0.0, 0);
+  printDXFtext ("RBD 4 10 3 1  -1.00000E-006", "Z88RBD", 256, tt, -6 * tt, th,
+		0.0, 0);
 
-  double nodex = 0.0;
-  double nodey = 0.0;
-  double nodez = 0.0;
 
-/*1 st number: Dimension of the structure (2 or 3) [Long]
-2 nd number: Number of nodes of the FEA structure [Long]
-3 rd number: Number of elements [Long]
-4 th number: Number of degrees of freedom [Long]
-5 th number: Coordinate flag KFLAG (0 or 1) [Long]. Attention: This position was in former
-Z88 versions reserved for the number of materials NEG.
-*/
-  printf
-    ("%d %d %d %d %d  modelDimension, Number of Nodes, Number of Elements, Total DOF, KFLAG(cartesian) \n",
-     nModel, nNodes, nElements, tDOF, coords);
 
-  for (int i = 1; i <= nNodes; i++)
+  printDXFtext ("Z88I5.TXT 0", "Z88FLA", 256, tt, -8 * tt, th, 0.0, 0);
+
+
+
+  for (int i = 1; i <= n + 1; i++)
     {
-      printf ("%d %d %e %e %e node %d\n", i, etypeDOF, nodex, nodey, nodez,
-	      i);
-      nodex += (L / (double) nElements);
+
+      sprintf (strText, "P %d", i);
+
+      printf ("999\n");
+      printf ("----------Point and Test %s  \n", strText);
+
+      //Z88KNR: Layer including the node numbers.
+      Z88printPoint (x, 0.0);
+
+      Z88printDXFtext (strText, x, 0.0, th);
+      memset (strText, 0, sizeof strText);
+      x += dx;
     }
 
 
-  for (int i = 1; i <= nElements; i++)
+  x = 0;
+
+  for (int i = 1; i <= n; i++)
     {
-      printf ("%d %d element %d\n", i, etype, i);
-      printf ("%d %d\n", i, i + 1);
+      sprintf (strText, "FE %d 13", i);
+      printDXFtext (strText, "Z88EIO", 256, x + 0.3 * dx, 0.1 * tt, th, 0.0,
+		    0);
+      memset (strText, 0, sizeof strText);
+      x += dx;
+    }
+
+  x = 0;
+
+  for (int i = 1; i <= n; i++)
+    {
+      Z88printLine (x, 0.000, x + dx, 0.000);
+      x += dx;
     }
 
 
-
-
+  printDXFfooter ();
 
 
 }

@@ -1045,31 +1045,51 @@ LatLong.Lat,phi, LatLong.Long,lambda, n,e2,v,rho,neta2,M,I,II,III,IIIA,IV,V,VI,N
 
 
 void
+Z88printDXFtext (char *text, double x0, double y0, double h)
+{
+
+  printf ("TEXT\n");
+  printf ("8\n");
+  printf ("Z88KNR\n");
+
+
+  printf (" 10\n");
+  printf ("%f\n", x0);
+  printf (" 20\n");
+  printf ("%f\n", y0);
+  printf (" 30\n");
+  printf ("0.0\n");
+  printf (" 40\n");
+  printf ("%f\n", h);
+
+
+  printf (" 1\n");
+  printf ("%s\n", text);
+
+  printf (" 0\n");
+
+}
+
+
+void
 printDXFtext (char *text, char *layername, int colour, double x0, double y0,
 	      double h, double rot, int justify)
 {
   printf ("TEXT\n");
-  printf ("8\n");
+  printf (" 8\n");
   printf ("%s\n", layername);
-  printf ("62\n");
-  printf ("%d\n", colour);
-  printf ("7\n");
-  printf ("%s\n", "simplex");
-  printf ("1\n");
-  printf ("%s\n", text);
-  printf ("10\n");
+
+  printf (" 10\n");
   printf ("%f\n", x0);
-  printf ("20\n");
+  printf (" 20\n");
   printf ("%f\n", y0);
-  printf ("30\n");
+  printf (" 30\n");
   printf ("0\n");
-  printf ("40\n");
+  printf (" 40\n");
   printf ("%f\n", h);
-  printf ("50\n");
-  printf ("%f\n", rot);
-  printf ("72\n");
-  printf ("%d\n", justify);
-  printf ("0\n");
+  printf (" 1\n");
+  printf ("%s\n", text);
+  printf (" 0\n");
 
 }
 
@@ -1463,6 +1483,58 @@ printCirle (char *layername, double cx, double cy, double R, int colour)
   printf ("40\n");
   printf ("%f\n", R);
   printf ("0\n");
+}
+
+
+void
+Z88printPoint (double x0, double y0)
+{
+  printf ("POINT\n");
+  printf ("8\n");
+  printf ("Z88PKT\n");
+
+  printf ("10\n");
+  printf ("%f\n", x0);
+
+  printf ("20\n");
+  printf ("%f\n", y0);
+
+  printf ("30\n");
+  printf ("0.0\n");
+
+  printf ("0\n");
+
+}
+
+void
+Z88printLine (double x0, double y0, double x1, double y1)
+{
+  printf ("LINE\n");
+  printf ("8\n");
+  printf ("Z88NET\n");
+
+  printf (" 10\n");
+  printf ("%f\n", x0);
+
+  printf (" 20\n");
+  printf ("%f\n", y0);
+
+  printf (" 30\n");
+  printf ("0.0\n");
+
+  printf (" 11\n");
+  printf ("%f\n", x1);
+
+  printf (" 21\n");
+  printf ("%f\n", y1);
+
+  printf (" 31\n");
+  printf ("0.0\n");
+
+
+
+  printf (" 0\n");
+
 }
 
 
@@ -2062,9 +2134,16 @@ date,deaths/  , deaths/ -7 , ?
 
 
 void
-generateHTMLtablefromCSVtest ()
+generateHTMLtablefromCSVtest (int day, int month, int year)
 {
-  printf ("<table border='2'>\n");
+
+
+
+  printf ("<img src='NightingaleExample_%d_%d_%d.png'>", day, month, year);
+
+
+
+  printf ("<br><br><table border='2'>\n");
   printf
     ("<tr><td>UK</td> <td> CFR(T=0)</td> <td> CFR(T=7)</td> <td>ONS registered deaths<br>(increase on 5 year avg.)</td> </tr>");
 
@@ -2219,99 +2298,7 @@ NLines ()
 
 
 
-/* Create FE geometry to run through Frank Reig's z88 software
- */
 
-void
-z88ExampleDXF ()
-{
-
-  char strText[32];
-
-  //write out dxf data
-  printDXFheader ();
-
-
-  sprintf (strText, "Z88NI.TXT 2 22 10 44 2 0 0 0 0 0");
-  printDXFtext (strText, "Z88GEN", 6, 100.0, 120.0, 10.0, 0.0, 0);
-  memset (strText, 0, sizeof strText);
-
-  sprintf (strText, "MAT 1 1 7 206000 0.3 3 10");
-  printDXFtext (strText, "Z88GEN", 6, 100.0, 100.0, 10.0, 0.0, 0);
-
-  memset (strText, 0, sizeof strText);
-
-
-  double x = 0.0;
-  double L = 100.0;
-  int n = 10;
-  double dx = L / (double) n;
-
-
-
-  for (int i = 1; i <= n; i++)
-    {
-
-      printLine ("Z88NET", x, 0.0, x + dx, 0.0, 5);
-      printLine ("Z88NET", x + dx, 0.0, x + dx, 10.0, 5);
-      printLine ("Z88NET", x + dx, 10.0, x, 10.0, 5);
-      printLine ("Z88NET", x, 10.0, x, 0.0, 5);
-
-
-      sprintf (strText, "SE %d 7 7 1 E 1 E", i);	//( 1st SE, SE type7, FE type7, subdiv. x 3 times equid., y 3 times equid. )
-      printDXFtext (strText, "Z88EIO", 5, x + 0.2 * dx, 5.0, 0.5, 0.0, 0);
-
-      memset (strText, 0, sizeof strText);
-
-
-
-
-      printPoint ("Z88PKT", x, 0.0, 1);
-      printPoint ("Z88PKT", x + dx, 0.0, 1);
-      printPoint ("Z88PKT", x, 10.0, 1);
-      printPoint ("Z88PKT", x + dx, 10.0, 1);
-
-
-
-      sprintf (strText, "P %d", i);
-      printDXFtext (strText, "Z88KNR", 1, x, 0.0, 0.5, 0.0, 0);
-      memset (strText, 0, sizeof strText);
-
-      sprintf (strText, "P %d", 2 * n + 3 - i);
-      printDXFtext (strText, "Z88KNR", 1, x, 10.0, 0.5, 0.0, 0);
-      memset (strText, 0, sizeof strText);
-
-
-      if (i == n)
-	{
-	  sprintf (strText, "P %d", n + 1);
-	  printDXFtext (strText, "Z88KNR", 1, x + dx, 0.0, 0.5, 0.0, 0);
-	  memset (strText, 0, sizeof strText);
-
-	  sprintf (strText, "P %d", n + 2);
-	  printDXFtext (strText, "Z88KNR", 1, x + dx, 10.0, 0.5, 0.0, 0);
-	  memset (strText, 0, sizeof strText);
-	}
-
-
-
-
-
-
-
-      x += dx;
-
-    }
-
-
-
-
-
-
-  printDXFfooter ();
-
-
-}
 
 
 
