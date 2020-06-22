@@ -1,8 +1,10 @@
 /*
-DXF reference information found at:
+ * 
+A great DXF reference source can be found at:
 http://paulbourke.net/dataformats/dxf/dxf10.html
 
 
+//havent got my head around hatching yet
 SOLID     Four points defining the corners of the solid: (10, 20, 30),
             (11, 21, 31), (12, 22, 32), and (13, 23, 33).  If only three
             points were entered (forming a triangular solid), the third
@@ -18,7 +20,8 @@ SOLID     Four points defining the corners of the solid: (10, 20, 30),
 #include <string.h>
 #include <math.h>
 #include "tydxfout.h"
-//#include "tyMems1.h"
+
+
 
 double degToRad = 0.017453292;
 
@@ -32,6 +35,8 @@ printWorldMapExample ()
   printDXFfooter ();
 }
 
+
+/*I use this as quick way of testing functions*/
 void
 printblankDXF ()
 {
@@ -344,29 +349,7 @@ print_xy_graph (char *filename, char *Title, char *legendX, char *legendY,
     }
 
 
-
-
-
-
-
-
   printDXFfooter ();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
 
@@ -1044,31 +1027,10 @@ LatLong.Lat,phi, LatLong.Long,lambda, n,e2,v,rho,neta2,M,I,II,III,IIIA,IV,V,VI,N
 }
 
 
-void
-Z88printDXFtext (char *text, double x0, double y0, double h)
-{
-
-  printf ("TEXT\n");
-  printf ("8\n");
-  printf ("Z88KNR\n");
 
 
-  printf (" 10\n");
-  printf ("%f\n", x0);
-  printf (" 20\n");
-  printf ("%f\n", y0);
-  printf (" 30\n");
-  printf ("0.0\n");
-  printf (" 40\n");
-  printf ("%f\n", h);
 
 
-  printf (" 1\n");
-  printf ("%s\n", text);
-
-  printf (" 0\n");
-
-}
 
 
 void
@@ -1076,21 +1038,25 @@ printDXFtext (char *text, char *layername, int colour, double x0, double y0,
 	      double h, double rot, int justify)
 {
   printf ("TEXT\n");
-  printf (" 8\n");
+  printf ("8\n");
   printf ("%s\n", layername);
-
-  printf (" 10\n");
+  printf ("62\n");
+  printf ("%d\n", colour);
+  printf ("10\n");
   printf ("%f\n", x0);
-  printf (" 20\n");
+  printf ("20\n");
   printf ("%f\n", y0);
-  printf (" 30\n");
-  printf ("0\n");
-  printf (" 40\n");
+  printf ("30\n");
+  printf ("0.0\n");
+  printf ("40\n");
   printf ("%f\n", h);
-  printf (" 1\n");
+  printf ("50\n");
+  printf ("%f\n", rot);
+  printf ("72\n");
+  printf ("%d\n", justify);
+  printf ("1\n");
   printf ("%s\n", text);
-  printf (" 0\n");
-
+  printf ("0\n");
 }
 
 
@@ -1486,56 +1452,9 @@ printCirle (char *layername, double cx, double cy, double R, int colour)
 }
 
 
-void
-Z88printPoint (double x0, double y0)
-{
-  printf ("POINT\n");
-  printf ("8\n");
-  printf ("Z88PKT\n");
-
-  printf ("10\n");
-  printf ("%f\n", x0);
-
-  printf ("20\n");
-  printf ("%f\n", y0);
-
-  printf ("30\n");
-  printf ("0.0\n");
-
-  printf ("0\n");
-
-}
-
-void
-Z88printLine (double x0, double y0, double x1, double y1)
-{
-  printf ("LINE\n");
-  printf ("8\n");
-  printf ("Z88NET\n");
-
-  printf (" 10\n");
-  printf ("%f\n", x0);
-
-  printf (" 20\n");
-  printf ("%f\n", y0);
-
-  printf (" 30\n");
-  printf ("0.0\n");
-
-  printf (" 11\n");
-  printf ("%f\n", x1);
-
-  printf (" 21\n");
-  printf ("%f\n", y1);
-
-  printf (" 31\n");
-  printf ("0.0\n");
 
 
 
-  printf (" 0\n");
-
-}
 
 
 void

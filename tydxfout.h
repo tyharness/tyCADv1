@@ -78,8 +78,8 @@ void printblankDXF ();
 void printDXFheader ();
 void printDXFfooter ();
 
-void exportPolylineCircle();
-void print2Dflange();
+void exportPolylineCircle ();
+void print2Dflange ();
 
 void
 print_xy_graph (char *filename, char *Title, char *legendX, char *legendY,
@@ -138,10 +138,3 @@ void printMapwithDXFheadAndFoot ();
 void readinLatLong (char *filename);
 void readinLatLong1 (char *filename);
 void printMapLatLong (char *countryname);
-
-
-void Z88printPoint (double x0, double y0);
-void Z88printLine (double x0, double y0,double x1, double y1);
-
-void Z88printDXFtext(char *text, double x0, double y0,
-	      double h);

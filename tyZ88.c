@@ -122,8 +122,8 @@ z88v15z88i2 ()
   printf ("1 1 2 0.00000E+000  Node1  disp x\n");
   printf ("1 2 2 0.00000E+000  Node1  disp y\n");
   printf ("1 3 2 0.00000E+000  Node1  rotation\n");
-  printf ("3 3 2 0.00000E+000 Node10 rotation\n");
-  printf ("3 2 1 -1.0000E-006 Node 10 Load y\n");
+  printf ("10 3 2 0.00000E+000 Node10 rotation\n");
+  printf ("10 2 1 -1.0000E-006 Node 10 Load y\n");
 
 
 }
@@ -370,6 +370,86 @@ z88xHeader ()
   printf ("SECTION\n");
   printf ("2\n");
   printf ("ENTITIES\n");
+  printf ("0\n");
+
+}
+
+
+void
+Z88printDXFtext (char *text, double x0, double y0, double h)
+{
+
+  printf ("TEXT\n");
+  printf ("8\n");
+  printf ("Z88KNR\n");
+
+
+  printf (" 10\n");
+  printf ("%f\n", x0);
+  printf (" 20\n");
+  printf ("%f\n", y0);
+  printf (" 30\n");
+  printf ("0.0\n");
+  printf (" 40\n");
+  printf ("%f\n", h);
+
+
+  printf (" 1\n");
+  printf ("%s\n", text);
+
+  printf (" 0\n");
+
+}
+
+
+
+void
+Z88printLine (double x0, double y0, double x1, double y1)
+{
+  printf ("LINE\n");
+  printf ("8\n");
+  printf ("Z88NET\n");
+
+  printf (" 10\n");
+  printf ("%f\n", x0);
+
+  printf (" 20\n");
+  printf ("%f\n", y0);
+
+  printf (" 30\n");
+  printf ("0.0\n");
+
+  printf (" 11\n");
+  printf ("%f\n", x1);
+
+  printf (" 21\n");
+  printf ("%f\n", y1);
+
+  printf (" 31\n");
+  printf ("0.0\n");
+
+
+
+  printf (" 0\n");
+
+}
+
+void
+Z88printPoint (double x0, double y0)
+{
+  printf ("POINT\n");
+  printf ("8\n");
+  printf ("Z88PKT\n");
+
+  printf ("10\n");
+  printf ("%f\n", x0);
+
+  printf ("20\n");
+  printf ("%f\n", y0);
+
+  printf ("30\n");
+  printf ("0.0\n");
+
   printf ("0\n");
 
 }

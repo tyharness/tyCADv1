@@ -13,4 +13,4 @@ double beta;
 // Set up variables and rates of change
 
 
-void generateSIRdata();
+void generateSIRdata ();

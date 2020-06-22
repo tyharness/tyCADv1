@@ -5,4 +5,5 @@ struct tyPoint
   double y;
 };
 
-struct tyPoint mirrorPointAboutLine(double Ax, double Ay, double Bx, double By,  double Cx, double Cy);
+struct tyPoint mirrorPointAboutLine (double Ax, double Ay, double Bx,
+				     double By, double Cx, double Cy);

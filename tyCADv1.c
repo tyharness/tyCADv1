@@ -91,14 +91,8 @@ main (int argc, char **argv)
   strftime (buffer, 80, "%Y", info);
   int y = atoi (buffer);
 
-  // printf("%d %d %d\n", d,m,y );
-
-
 
   printhelp (d, m, y);
-
-
-
 
   current_time = time (NULL);
   time_string = ctime (&current_time);
@@ -109,8 +103,6 @@ main (int argc, char **argv)
 
       fclose (debugfile);
     }
-
-
 
 
   return 0;
@@ -130,10 +122,10 @@ caseFatalityRate ()
 
 
 
-  printf ("Enter Daily death rate ");
+  printf ("Enter the total number of deaths ");
   scanf ("%d", &nDeaths);
 
-  printf ("Enter Confirmed Cases ");
+  printf ("Enter the total Confirmed Cases ");
   scanf ("%d", &nCases);
 
   printf ("...exported to output directory...\n");
@@ -196,7 +188,9 @@ printhelp (int d, int m, int y)
       printf
 	("|12)Mems Device Example  : output/mems1e.dxf  output/z88example/z88x.dxf       |\n");
       printf
-	("|13)Z88 FE Example: Generate all the z88 input files in output/z88example/z88i*|\n");
+	("|13)Z88 FE Example bp5: z88 input files in output/z88example/z88i*             |\n");
+      printf
+	("|14)Z88 FE Example bp6: z88 input files and z88x.dxf                           |\n");
 
 
       printf
@@ -239,27 +233,16 @@ printhelp (int d, int m, int y)
 	choice = 12;
       if (strcmp (strChoice, "13\n") == 0)
 	choice = 13;
-
-      if (strcmp (strChoice, "z88\n") == 0)
+      if (strcmp (strChoice, "14\n") == 0)
 	choice = 14;
-
-
       if (strcmp (strChoice, "cfr\n") == 0)
 	choice = 100;
-
       if (strcmp (strChoice, "b\n") == 0)
 	choice = 200;
-
-      if (strcmp (strChoice, "flange\n") == 0)
+      if (strcmp (strChoice, "flange\n") == 0)	//non documented
 	choice = 300;
-
-      if (strcmp (strChoice, "xy\n") == 0)
+      if (strcmp (strChoice, "xy\n") == 0)	//non documented
 	choice = 400;
-
-
-
-
-
     }
   while (choice == -1);
 
@@ -383,11 +366,7 @@ printhelp (int d, int m, int y)
 
     }
 
-
-
-
 /*====================================================================*/
-
 
   if (choice == 8)
     generateSIRdata ();
@@ -441,27 +420,43 @@ printhelp (int d, int m, int y)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
   if (choice == 13)
     {
+
+      /* bp5 problem
+       * 
+       * 
+       * copy all the output/z88example direcotry to the root directory of z88r binary file.
+       * 
+       * you can use the gui commander interface
+       * ./z88com
+       * 
+       * then run the solver
+       * ./z88r -c -choly &
+       * if succesful
+       * view the displacements
+       * cat z88o2.txt &
+       * view the stress
+       * cat z880o.txt &
+       * to use Prof. FR opengl output program
+       * ./z88o &
+       * 
+       * I think it's as easy to generate the input files direcotry as per this example
+       * but you can convert input files to z88x.dxf using
+       * 
+       * ./z88x -iatx
+       * 
+       */
+
+
       printf ("z88 input files exported to output/z88example directory...\n");
 
 
-      /*Using z88 Beam13 element to descrive a cantilever beam problem bp5 */
+      /*Using a z88 Beam13 element to describe the cantilever beam problem bp5 */
 
       int nMaterials = 1;
-      int nElements = 2;
-      int nNodes = 3;
+      int nElements = 9;
+      int nNodes = nElements + 1;
       int matNo = 1;
       double E = 1.08e11;
       double Poisson = 0.3;
@@ -473,7 +468,7 @@ printhelp (int d, int m, int y)
       double maxdistz = d * 0.5;
       double Izz = (d * d * d * d) / 12;	//db^3/12  
 
-      double L = 1e-3;		//length of cantilever
+      double L = 1e-3;		//length of cantilever 1mm
 
 
       stdout = freopen ("output/z88example/z88i1.txt", "w", stdout);
@@ -511,8 +506,13 @@ printhelp (int d, int m, int y)
     {
 
 
+      /*Example bp6
+       * convert the z88x to z88 imput files
+       *./z88x -iafx
+       */
+
       int nMaterials = 1;
-      int nElements = 2;
+      int nElements = 9;
       //int nNodes = 3;
       int matNo = 1;
       double E = 1.08e11;
@@ -571,6 +571,16 @@ printhelp (int d, int m, int y)
       stdout = freopen ("output/blank.dxf", "w", stdout);
       printblankDXF ();
     }
+
+
+
+
+
+
+
+  /*non documneted features
+   * 
+   */
 
   if (choice == 300)
     {
