@@ -4,8 +4,8 @@ http://www.tyharness.dx.am/tctutorial/index.htm
 
 This is a work in progress - very rough and ready programming.  
 
-I'm writing this software in the UK over this COVID-19 virus pandemic because feeling a bit useless being laid off from work.  The world's poor and vulnerable are going to suffer badly.  We've got to help poorer nations and to control and eradicate the virus.  Please feel free to use what you need to help solve the COVID-19 pandemic.  If you use the code for commercial reasons please give a donation to a charity to help the poor and vulnerable.
-
+I'm writing this software (in a raspberry pi with raspbian linux distro) in the UK over this COVID-19 virus pandemic because feeling a bit useless being laid off from work.  The world's poor and vulnerable are going to suffer badly.  We've got to help poorer nations and to control and eradicate the virus.  Please feel free to use what you need to help solve the COVID-19 pandemic.  If you use the code for commercial reasons please give a donation to a charity to help the poor and vulnerable.
+(I will check it works with Debian x86 or amd64.  I've no use to getting on win10 - sorry Bill).
 
 Features:
 *Mapping.
@@ -26,9 +26,23 @@ I'd like to dedicate this software and work to my parents who both died from hor
 /*--------------------------------------------------------------------------------------------------------*/
 
 Download from Github and uncompress
+
+Open a terminal
+
+wget https://github.com/tyharness/tyCADv1/archive/master.zip
+
+Decompress in your home/pi directory. {replace pi with your direcotry - pi is the default)
+
+unzip master.zip 
+
+cd ~/home/pi/tyCADv1-Master
+
 You make need to change the file permissions to allow read, write and execute.
 
+chmod +x -R tyCADv1-master/*
+
 From CLI
+cd tyCADv1-master
 
 To compile:
 make
@@ -37,8 +51,9 @@ To run
 ./tyCADv1
 
 
-Choose from the text menu what to export to the output directory
+3rd party applications to compliment the examples.
 
+Choose from the text menu what to export to the output directory
 
 To install use LibreCAD
 sudo apt install librecad
