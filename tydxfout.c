@@ -20,10 +20,12 @@ SOLID     Four points defining the corners of the solid: (10, 20, 30),
 #include <string.h>
 #include <math.h>
 #include "tydxfout.h"
-
+#include "tyMath.h"
+#include "tyCADv1.h"
 
 
 double degToRad = 0.017453292;
+double Pi = 3.141592664;
 
 
 
@@ -1054,6 +1056,7 @@ printDXFtext (char *text, char *layername, int colour, double x0, double y0,
   printf ("%f\n", rot);
   printf ("72\n");
   printf ("%d\n", justify);
+  printf ("7\nSIMPLEX\n");
   printf ("1\n");
   printf ("%s\n", text);
   printf ("0\n");
@@ -1519,6 +1522,31 @@ printLine (char *layername, double x0, double y0, double x1, double y1,
 }
 
 
+void
+printPolarLine (char *layername, double x0, double y0, double r, double theta,
+		int colour)
+{
+  printf ("LINE\n");
+  printf ("8\n");
+  printf ("%s\n", layername);
+  printf ("62\n");
+  printf ("%d\n", colour);
+  printf ("10\n");
+  printf ("%f\n", x0);
+  printf ("20\n");
+  printf ("%f\n", y0);
+  printf ("30\n");
+  printf ("0\n");
+  printf ("11\n");
+  printf ("%f\n", x0 + r * cos (theta));
+  printf ("21\n");
+  printf ("%f\n", y0 + r * sin (theta));
+  printf ("31\n");
+  printf ("0\n");
+  printf ("0\n");
+}
+
+
 
 void
 printPolyLineHeader (char *layername, int colour, int closed)
@@ -1747,7 +1775,7 @@ drawTest ()
 }
 
 void
-generateNightingaleExample (int N)
+generateNightingaleExample (int N, int day, int mon, int year)
 {
 
   printDXFheader ();
@@ -1845,7 +1873,9 @@ generateNightingaleExample (int N)
 			    10.0 * cos (ang * degToRad),
 			    10.0 * sin (ang * degToRad), th, ang, 0);
 
-	      sprintf (strText, "%d/6/20", i + 1);
+//to do remove hard coded /7/20 
+
+	      sprintf (strText, "%d/%d/%d", i + 1, mon, year);
 	      printDXFtext (strText, "NightingaleTextDate", 3,
 			    20.0 * cos (ang * degToRad),
 			    20.0 * sin (ang * degToRad), th, ang, 0);
@@ -2012,7 +2042,7 @@ date,deaths/  , deaths/ -7 , ?
 		{
 		  double cfr1 =
 		    ((double) dx - dxold) / ((double) dy - dyold - 7.0);
-		  printf (",%.0f/[%.0f-7]=%.3f[%.1f],?",
+		  printf (",%.0f/[%.0f-7]=%.3f[%.1f%%],?",
 			  ((double) dx - dxold), ((double) dy - dyold), cfr1,
 			  (cfr1 * 100.0));
 		}
@@ -2283,6 +2313,274 @@ exportPolylineCircle ()
     }
 
 }
+
+
+
+
+
+
+
+
+void
+testMassProperties (char *filename)
+{
+
+  //write out dxf data
+  printDXFheader ();
+
+  printPolyLineHeader ("Pline", 3, 1);
+  //read in the polyline
+
+
+  FILE *file;
+  char c;
+
+  file = fopen (filename, "r");
+
+
+  char sNum[30];
+  int q = 0;
+
+  double x1 = 0.0;
+  double y1 = 0.0;
+
+
+  int i = 0;
+  //char strText[32];
+
+
+  if (file)
+    {
+
+
+      while (c != EOF || (int) c != 255)
+	{
+	  c = getc (file);
+	  if (c == EOF || (int) c == 255)
+	    break;
+	  if (c != ',' && c != ' ')
+	    {
+	      sNum[q] = c;
+	      q++;
+	    }
+
+	  if (c == ',')
+	    {
+	      x1 = atof (sNum);
+	      q = 0;
+	      sNum[q] = '\0';
+	      memset (sNum, 0, sizeof sNum);
+	    }
+
+	  if (c == '\n')
+	    {
+	      y1 = atof (sNum);
+
+	      printPloyLineVertex ("mems1e", x1, y1, 0.0);
+	      q = 0;
+	      sNum[q] = '\0';
+	      memset (sNum, 0, sizeof sNum);
+	      i++;
+
+	    }
+
+	}
+
+      fclose (file);
+
+    }
+
+  printPolyLineFooter ();
+
+
+
+  struct tyPlineProperties pline = get_tyPline_from_file (filename);
+
+
+  double sf, Del, I;		//scale this to the max min of obejct
+
+  double DelX = pline.xmax - pline.xmin;
+  double DelY = pline.ymax - pline.ymin;
+
+
+  if (DelX > DelY)
+    Del = DelX;
+  else
+    Del = DelY;
+
+  if (pline.I1 > pline.I2)
+    I = pline.I1;
+  else
+    I = pline.I2;
+
+  sf = Del / I;
+
+  if (DEBUG)
+    fprintf (debugfile,
+	     "Function testMassProperties Del/I = sf %f / %f = %f \n", Del, I,
+	     sf);
+
+
+
+  print_xyAxes ("Axes", 2, pline.xmin, pline.xmax, pline.ymin, pline.ymax, 12,
+		12, 1.0, 1.0);
+
+
+  printCirle ("Centroid", pline.xbar, pline.ybar, 0.01 * Del, 3);	//plot the centroid of pline
+  printCirle ("Origin", 0.0, 0.0, 0.02 * Del, 2);	//plot origin, point of roatation
+
+  char strText[40];
+
+
+  sprintf (strText, "Area [unit]^2 = %8.3e", pline.A);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 0.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+  sprintf (strText, "xbar [unit], ybar [unit]  = %8.3e, %8.3e", pline.xbar,
+	   pline.ybar);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 8.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+  sprintf (strText, "Mxx [unit]^3 =  %8.3e", pline.Mx);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 16.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+  sprintf (strText, "Myy[unit]^3 =  %8.3e", pline.My);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 24.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+  sprintf (strText, "Ixx [unit]^4              = %8.3e", pline.Ixx);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 32.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+  sprintf (strText, "Iyy [unit]^4 = %8.3e", pline.Iyy);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 40.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+  sprintf (strText, "Izz [unit]^4 = %8.3e", pline.Izz);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 48.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+
+  sprintf (strText, "Ixy [unit]^4 = %8.3e", pline.Ixy);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 56.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+
+  sprintf (strText, "Inaxx[unit]^4 = %8.3e", pline.Inaxx);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 64.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+  sprintf (strText, "Inayy [unit]^4 = %8.3e", pline.Inayy);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 72.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+  sprintf (strText, "J [unit]^4 = %8.3e", pline.J);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 80.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+  sprintf (strText, "rx [unit] = %8.3e", pline.rx);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 88.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+  sprintf (strText, "ry [unit] = %8.3e", pline.ry);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 96.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+  sprintf (strText, "Theta1 [radian] = %8.3e", pline.theta1);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 104.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+
+  sprintf (strText, "Theta2 [radian] = %8.3e", pline.theta2);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 112.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+  sprintf (strText, "I1[unit]^4 = %8.3e", pline.I1);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 120.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+  sprintf (strText, "I2[unit]^4 = %8.3e", pline.I2);
+  printDXFtext (strText, "MassProperties", 1, 10.0, 128.0, 3.0, 0.0, 0);
+  memset (strText, 0, sizeof strText);
+
+
+
+
+  /* change to vector arrows */
+  printPolarLine ("I1", pline.xbar, pline.ybar, pline.I1 * sf, pline.theta1,
+		  4);
+  printPolarLine ("I2", pline.xbar, pline.ybar, pline.I2 * sf, pline.theta2,
+		  4);
+
+
+
+
+  printDXFfooter ();
+
+
+
+}
+
+
+
+
+void
+exportPolylineAnnulus ()
+{
+/*
+Generate annulus polyline data and write the polyline
+* to stdout or file
+*/
+
+  double startAng = 30.0;
+  double endAng = 300.0;
+  double DelAng = endAng - startAng;
+  double R = 100.0;
+  double r = 50.0;
+
+
+  double theta = startAng * degToRad;
+  double x = R * cos (theta);
+  double y = R * sin (theta);
+
+
+  double dt = 2 * Pi / 360.0;
+
+  for (int i = 0; i <= DelAng; i++)
+    {
+      x = R * cos (theta);
+      y = R * sin (theta);
+      printf ("%f,%f\n", x, y);
+      theta += dt;
+    }
+
+
+  theta = endAng * degToRad;
+
+  x = r * cos (theta);
+  y = r * sin (theta);
+
+  printf ("%f,%f\n", x, y);
+
+
+  for (int i = DelAng; i >= 0; i--)
+    {
+      x = r * cos (theta);
+      y = r * sin (theta);
+      printf ("%f,%f\n", x, y);
+      theta -= dt;
+    }
+
+
+
+
+
+}
+
+
+
+
 
 
 

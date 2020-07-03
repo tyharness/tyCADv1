@@ -4,9 +4,8 @@ http://www.tyharness.dx.am/tctutorial/index.htm
 
 This is a work in progress - very rough and ready programming.  
 
-I'm writing this software (on a raspberry pi 3 with the default Raspbian linux distro) in the UK over this COVID-19 virus pandemic because feeling a bit useless being laid off from work.  The world's poor and vulnerable are going to suffer badly.  We've got to help poorer nations and to control and eradicate the virus.  Please feel free to use what you need to help solve the COVID-19 pandemic.  If you use the code for commercial reasons please give a donation to a charity to help the poor and vulnerable.
-(I will check it works with Debian x86 or amd64.  I've no use to getting on win10 - sorry Bill).  Basically, I fancy myself as an 'armchair' epidemiologist, but
-alas I'm too old start a new career.
+I'm writing this software in the UK over this COVID-19 virus pandemic because feeling a bit useless being laid off from work.  The world's poor and vulnerable are going to suffer badly.  We've got to help poorer nations and to control and eradicate the virus.  Please feel free to use what you need to help solve the COVID-19 pandemic.  If you use the code for commercial reasons please give a donation to a charity to help the poor and vulnerable.
+
 
 Features:
 *Mapping.
@@ -15,35 +14,21 @@ Features:
 *Micro Electro Mechanical Systems (MEMS) device design.
 
 
-tyCADv1 is a simple set of c functions to generate dxf code for use with computer aided design (CAD) system of your choice.  I often find with various CAD applications
+tyCADv1 - a simple set of c functions for use with computer aided design CAD.  I often find with various CAD applications
 that they are limited and I know 5 lines of code will probably solve the problem, but I accept draughtsman and engineers will want to keep using CAD application they love and know how to use.  Therefore here are some independent functions you may
 find useful and more productive, hence note it's not a graphical editor/application but genrates data and allows a static interaction via the DXF format so you can import the generated data into the CAD application of your choice.
 
-I'm using a Raspberry PI 3 which has the gnu c compiler installed by default.  Plus there's a lot of nice open source CAD/graphical applications like LibreCAD, OPENSCAD, gnuplot etc available.  I'm a IMSI TurboCAD man really from my working days - or at least it's the only commercial software I could afford for home use.  The DXF file format although old-fashioned still does the job and nearly
+I'm using a Raspberry PI 3 which has the gnu c compiler included in the default linux distro.  Plus there's a lot of nice open source CAD/graphical applications like LibreCAD, OPENSCAD, gnuplot etc available.  I'm a IMSI TurboCAD man really from my working days - or at least it's the only commercial software I could afford for home use.  The DXF file format although old-fashioned still does the job and nearly
 all CAD application can still read DXF.
 
-I'd like to dedicate this software and work to my parents who both died from horrendous respiratory diseases.
+I'd like to dedicate this software and work to my parents who both died from horrendous respiratory disease.
 
 /*--------------------------------------------------------------------------------------------------------*/
 
 Download from Github and uncompress
-
-Open a terminal
-
-wget https://github.com/tyharness/tyCADv1/archive/master.zip
-
-Decompress in your home/pi directory. {replace pi with your direcotry - pi is the default)
-
-unzip master.zip 
-
-cd ~/home/pi/tyCADv1-Master
-
 You make need to change the file permissions to allow read, write and execute.
 
-chmod +x -R tyCADv1-master/*
-
 From CLI
-cd tyCADv1-master
 
 To compile:
 make
@@ -51,18 +36,9 @@ make
 To run
 ./tyCADv1
 
-How to use tyCADv1
-
-It's a very simple text based front end where you choose an example and read/write dxf data from there you can import the results into the CAD system of your
-choice.  I guess they are kind of helper functions which should make you more productive, and I want to hit the ground running and solve nightmare
-pandemic.
-
-
-/*--------------------------------------------------------------------------------------------------------------------------*/
-
-3rd party applications to compliment the examples.
 
 Choose from the text menu what to export to the output directory
+
 
 To install use LibreCAD
 sudo apt install librecad
@@ -82,3 +58,18 @@ or just
 gnuplot SIRscriptfile -p
 
 the generated SIR.dat file and SIRscriptfile can be found in the output directory.
+
+
+/*---------------------------*/
+
+
+
+
+
+
+
+
+
+
+
+

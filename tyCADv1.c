@@ -36,7 +36,7 @@ To run
 #include "tyMems1.h"
 #include "SIR.h"
 #include "tyZ88.h"
-
+#include "tyMath.h"
 
 
 
@@ -147,9 +147,6 @@ printhelp (int d, int m, int y)
 
 
   char strChoice[30];
-
-
-
   int choice = -1;
 
   do
@@ -191,6 +188,9 @@ printhelp (int d, int m, int y)
 	("|13)Z88 FE Example bp5: z88 input files in output/z88example/z88i*             |\n");
       printf
 	("|14)Z88 FE Example bp6: z88 input files and z88x.dxf                           |\n");
+
+      printf
+	("|15)Polyline and mass properties example                                       |\n");
 
 
       printf
@@ -235,14 +235,31 @@ printhelp (int d, int m, int y)
 	choice = 13;
       if (strcmp (strChoice, "14\n") == 0)
 	choice = 14;
+      if (strcmp (strChoice, "15\n") == 0)
+	choice = 15;
+
+
+
+      //non documented features
       if (strcmp (strChoice, "cfr\n") == 0)
 	choice = 100;
       if (strcmp (strChoice, "b\n") == 0)
 	choice = 200;
-      if (strcmp (strChoice, "flange\n") == 0)	//non documented
+      if (strcmp (strChoice, "flange\n") == 0)
 	choice = 300;
       if (strcmp (strChoice, "xy\n") == 0)	//non documented
 	choice = 400;
+
+      if (strcmp (strChoice, "circle\n") == 0)
+	choice = 1000;
+      if (strcmp (strChoice, "anulus\n") == 0)
+	choice = 1001;
+      if (strcmp (strChoice, "square\n") == 0)
+	choice = 1002;
+
+
+
+
     }
   while (choice == -1);
 
@@ -275,7 +292,7 @@ printhelp (int d, int m, int y)
     }
 
   if (choice == 4)
-    generateNightingaleExample (30);
+    generateNightingaleExample (30, 0, 0, 0);
 
   if (choice == 5)
     {
@@ -292,7 +309,7 @@ printhelp (int d, int m, int y)
 
       printf ("NightingaleExample.dxf exported to output directory...\n");
       stdout = freopen ("output/NightingaleExample.dxf", "w", stdout);
-      generateNightingaleExample (nd);
+      generateNightingaleExample (nd, d, m, y);
     }
 
 
@@ -343,7 +360,7 @@ printhelp (int d, int m, int y)
 
 
       stdout = freopen (strText, "w", stdout);
-      generateNightingaleExample (nd);
+      generateNightingaleExample (nd, d, m, y);
 
 
       stdout = freopen ("output/XYdataexampleCovidDeathsUK.dxf", "w", stdout);
@@ -555,6 +572,82 @@ printhelp (int d, int m, int y)
     }
 
 
+  if (choice == 15)
+    {
+
+
+
+      char *filename[10];
+      char strChoice[10];
+
+
+
+
+
+      system ("clear");
+
+
+      int ret = 0;		//default
+      filename[0] = "input/square.dat";
+
+      filename[1] = "input/square.dat";
+      filename[2] = "input/square1.dat";
+      filename[3] = "input/square2.dat";
+      filename[4] = "input/circle.dat";
+      filename[5] = "input/zed.dat";
+      filename[6] = "input/zed1.dat";
+      filename[7] = "input/mems1e.csv";
+      filename[8] = "input/anulus.dat";
+
+
+
+
+      for (int i = 1; i <= 8; i++)
+	{
+	  printf ("%d) %s\n", i, filename[i]);
+	}
+
+
+      fgets (strChoice, 30, stdin);
+
+
+      if (strcmp (strChoice, "1\n") == 0)
+	ret = 1;
+      if (strcmp (strChoice, "2\n") == 0)
+	ret = 2;
+      if (strcmp (strChoice, "3\n") == 0)
+	ret = 3;
+      if (strcmp (strChoice, "4\n") == 0)
+	ret = 4;
+      if (strcmp (strChoice, "5\n") == 0)
+	ret = 5;
+      if (strcmp (strChoice, "6\n") == 0)
+	ret = 6;
+      if (strcmp (strChoice, "7\n") == 0)
+	ret = 7;
+
+
+      if (strcmp (strChoice, "8\n") == 0)
+	ret = 8;
+
+
+
+      printf
+	("%s input/MassPropertiesExample.dxf exported to output directory...\n",
+	 filename[ret]);
+
+      stdout = freopen ("output/MassPropertiesExample.dxf", "w", stdout);
+      testMassProperties (filename[ret]);
+
+
+    }
+
+
+
+
+
+
+
 /*non documented functions*/
 
   if (choice == 100)
@@ -564,6 +657,9 @@ printhelp (int d, int m, int y)
     }
 
 
+/*non documented functions*/
+
+
   if (choice == 200)
     {
       /*generate  a blank dxf file */
@@ -571,10 +667,6 @@ printhelp (int d, int m, int y)
       stdout = freopen ("output/blank.dxf", "w", stdout);
       printblankDXF ();
     }
-
-
-
-
 
 
 
@@ -610,6 +702,28 @@ printhelp (int d, int m, int y)
 		      "test3", 7, 2);
 
 
+    }
+
+
+  if (choice == 1000)
+    {
+      printf ("circle.dat exported to output directory...\n");
+      stdout = freopen ("input/circle.dat", "w", stdout);
+      exportPolylineAnnulus ();
+    }
+
+  if (choice == 1001)
+    {
+      printf ("anulus.dat exported to output directory...\n");
+      stdout = freopen ("input/anulus.dat", "w", stdout);
+      exportPolylineAnnulus ();
+    }
+
+  if (choice == 1002)
+    {
+      printf ("square.dat exported to output directory...\n");
+      stdout = freopen ("input/square.dat", "w", stdout);
+      exportPolylineAnnulus ();
     }
 
 

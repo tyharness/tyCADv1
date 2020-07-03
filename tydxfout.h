@@ -10,6 +10,8 @@ extern double phi0;		// Projection UTM zone 30
 
 extern double degToRad;
 
+extern double Pi;
+
 struct EN
 {
   double N;
@@ -33,6 +35,8 @@ struct XYZ
 
 
 
+
+
 struct tyLin
 {
   int key;
@@ -50,9 +54,6 @@ struct tyLine
   struct tyLin *m;
   struct tyLine *next;		//linked list pointer
 };
-
-
-
 
 
 //global pointers for LL
@@ -79,6 +80,11 @@ void printDXFheader ();
 void printDXFfooter ();
 
 void exportPolylineCircle ();
+
+
+void exportPolylineAnnulus ();
+
+
 void print2Dflange ();
 
 void
@@ -98,6 +104,11 @@ void printPoint (char *layername, double x0, double y0, int colour);
 
 void printLine (char *layername, double x0, double y0, double x1, double y1,
 		int colour);
+
+void printPolarLine (char *layername, double x0, double y0, double r,
+		     double theta, int colour);
+
+
 
 void printCirle (char *layername, double cx, double cy, double R, int colour);
 
@@ -132,9 +143,11 @@ void convert_coviddataUK_to_COVID19dataUK (int mon, int year);
 void generateHTMLtablefromCSVtest (int day, int mon, int year);
 
 void generateFibonacciExample ();
-void generateNightingaleExample (int N);
+void generateNightingaleExample (int N, int day, int mon, int year);
 void printMapwithDXFheadAndFoot ();
 
 void readinLatLong (char *filename);
 void readinLatLong1 (char *filename);
 void printMapLatLong (char *countryname);
+
+void testMassProperties (char *filename);

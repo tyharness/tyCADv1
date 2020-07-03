@@ -30,6 +30,6 @@ cleanz88:
 	$(RM) output/z88example/*
 
 clean: 
-	$(RM) *.o *.gch output/*.dxf output/debug.txt output/z88example/* input/mems1e.csv *~ tyCADv1
+	$(RM) *.o *.gch output/*.dxf output/*~ output/debug.txt output/z88example/*. *~ tyCADv1
 
 	

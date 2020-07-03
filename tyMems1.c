@@ -27,10 +27,10 @@ Generate the mems1e design using polyline data and write the polyline
   double x, y, L, t, g, sh, susg, suse, susL, sust;
 
 
-  L =   100.0;			//Length of electrode
-  t =   10.0;			    //thickness of electrode
-  g =   4.0;			    //eletrode gapping
-  sh =  100.0;			    //spar height  
+  L = 100.0;			//Length of electrode
+  t = 10.0;			//thickness of electrode
+  g = 4.0;			//eletrode gapping
+  sh = 100.0;			//spar height  
   susg = 120.0;			//suspension gapping
   suse = 30.0;			//suspenspen thickness at the ends
   susL = 400.0;			//cantilever Length
